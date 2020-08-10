@@ -35,6 +35,24 @@ const SettingMe = ({
         chevron
         onPress={() => clickPage(profileStack.setting)}
       />
+       <ListItem
+        leftIcon={icon(0)}
+        title={ }
+        type="underline"
+        titleProps={titleProps}
+        pad={padding.large}
+        chevron
+        onPress={() => clickPage(profileStack.setting)}
+      />
+       <ListItem
+        leftIcon={icon(0)}
+        title={t('common:text_setting')}
+        type="underline"
+        titleProps={titleProps}
+        pad={padding.large}
+        chevron
+        onPress={() => clickPage(profileStack.setting)}
+      />
       {/* <ListItem
         leftIcon={icon(1)}
         title={t('common:text_help_info')}

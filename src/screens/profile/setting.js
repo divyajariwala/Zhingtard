@@ -37,6 +37,7 @@ class SettingScreen extends React.Component {
           centerComponent={<TextHeader title={t('common:text_setting')} />}
           rightComponent={<CartIcon />}
         />
+        
         <Container>
           <Language title={t('profile:text_language')} />
           <Currency title={t('profile:text_currency')} />

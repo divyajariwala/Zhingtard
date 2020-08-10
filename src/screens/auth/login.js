@@ -1,7 +1,13 @@
 import React from 'react';
 import {connect} from 'react-redux';
 
-import {StyleSheet, ScrollView, View, KeyboardAvoidingView} from 'react-native';
+import {
+  StyleSheet,
+  ScrollView,
+  View,
+  KeyboardAvoidingView,
+  AsyncStorage,
+} from 'react-native';
 import {Header, Divider, Text, ThemedView} from 'src/components';
 import Container from 'src/containers/Container';
 import Input from 'src/containers/input/Input';
@@ -9,7 +15,6 @@ import Button from 'src/containers/Button';
 import TextHtml from 'src/containers/TextHtml';
 import {TextHeader, IconHeader} from 'src/containers/HeaderComponent';
 import SocialMethods from './containers/SocialMethods';
-
 import {rootSwitch, authStack} from 'src/config/navigator';
 
 import {signInWithEmail} from 'src/modules/auth/actions';
@@ -17,7 +22,7 @@ import {authSelector} from 'src/modules/auth/selectors';
 import {requiredLoginSelector} from 'src/modules/common/selectors';
 import {margin} from 'src/components/config/spacing';
 
-import { NavigationActions } from 'react-navigation';
+import {NavigationActions} from 'react-navigation';
 
 import {changeColor} from 'src/utils/text-html';
 
@@ -29,16 +34,37 @@ class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: '',
-      password: '',
+      username: 'divya@gmail.com',
+      password: 'text@123',
+      isLogin: 0,
+      username1: 'abc@gmail.com',
+      password1: 'text@123',
+      sales: '',
     };
   }
 
-  handleLogin = () => {
-    const {username, password} = this.state;
+  handleLogin = async () => {
+    // const {username, password, isLogin, username1, password1,sales} = this.state;
     // this.props.dispatch(signInWithEmail({username, password}));
-    const router = rootSwitch.main;
-    this.props.navigation.navigate(router);
+    if (
+      this.state.username === 'divya@gmail.com' &&
+      this.state.password === 'text@123'
+    ) {
+      this.setState({
+        sales: 'customer',
+      });
+      await AsyncStorage.setItem('logincheck', 'customer');
+
+      const router = rootSwitch.main;
+      this.props.navigation.navigate(router);
+    } else {
+      this.setState({
+        sales: 'sales',
+      });
+      await AsyncStorage.setItem('logincheck', 'sales');
+      const router = rootSwitch.main;
+      this.props.navigation.navigate(router);
+    }
   };
 
   render() {
@@ -61,7 +87,7 @@ class LoginScreen extends React.Component {
               //   size={24}
               //   onPress={() => navigation.navigate(rootSwitch.main)}
               // />
-              <View></View>
+              <View />
             )
           }
           centerComponent={<TextHeader title={t('common:text_signin')} />}

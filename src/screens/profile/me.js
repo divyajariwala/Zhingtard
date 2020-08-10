@@ -1,23 +1,38 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import {connect} from 'react-redux';
 
-import { StyleSheet, ScrollView, View, Linking } from 'react-native';
-import { Header, ThemedView, Text } from 'src/components';
+import {StyleSheet, ScrollView, View, Linking} from 'react-native';
+import {Header, ThemedView, Text} from 'src/components';
 
 import HeaderMe from './containers/HeaderMe';
 import SettingMe from './containers/SettingMe';
+import SettingMe1 from './containers/SettingMe1';
+
 import InformationMe from './containers/InformationMe';
 import Container from 'src/containers/Container';
 import SocialIcon from 'src/containers/SocialIcon';
-import { TextHeader, CartIcon } from 'src/containers/HeaderComponent';
+import {TextHeader, CartIcon} from 'src/containers/HeaderComponent';
 
-import { authSelector } from 'src/modules/auth/selectors';
-import { wishListSelector, configsSelector } from 'src/modules/common/selectors';
+import {authSelector} from 'src/modules/auth/selectors';
+import {wishListSelector, configsSelector} from 'src/modules/common/selectors';
 
-import { grey5 } from 'src/components/config/colors';
-import { margin } from 'src/components/config/spacing';
+import {grey5} from 'src/components/config/colors';
+import {margin} from 'src/components/config/spacing';
+import AsyncStorage from '@react-native-community/async-storage';
 
 class MeScreen extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      check: '',
+    };
+  }
+  async componentDidMount() {
+    this.setState({
+      check: await AsyncStorage.getItem('logincheck'),
+    });
+    console.log('login check', this.state.check);
+  }
   static navigationOptions = {
     header: null,
   };
@@ -29,19 +44,19 @@ class MeScreen extends Component {
     };
   };
 
-  handleLinkUrl = (url) => {
+  handleLinkUrl = url => {
     Linking.openURL(url);
   };
 
-  goPageOther = (router) => {
-    this.props.navigation.navigate(router)
+  goPageOther = router => {
+    this.props.navigation.navigate(router);
   };
 
   render() {
     const {
       configs,
-      auth: { isLogin },
-      screenProps: { t },
+      auth: {isLogin},
+      screenProps: {t},
     } = this.props;
 
     return (
@@ -54,12 +69,22 @@ class MeScreen extends Component {
               isLogin={isLogin}
               clickPage={this.goPageOther}
             /> */}
-            <SettingMe
-              isLogin={isLogin}
-              clickPage={this.goPageOther}
-              goPhone={this.handleLinkUrl}
-              phonenumber={configs.get('phone')}
-            />
+            {this.state.check === 'customer' && (
+              <SettingMe
+                isLogin={isLogin}
+                clickPage={this.goPageOther}
+                goPhone={this.handleLinkUrl}
+                phonenumber={configs.get('phone')}
+              />
+            )}
+            {this.state.check === 'sales' && (
+              <SettingMe1
+                isLogin={isLogin}
+                clickPage={this.goPageOther}
+                goPhone={this.handleLinkUrl}
+                phonenumber={configs.get('phone')}
+              />
+            )}
             {/* <View style={styles.viewSocial}>
               <SocialIcon
                 light
