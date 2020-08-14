@@ -7,6 +7,7 @@ import {
   View,
   KeyboardAvoidingView,
   AsyncStorage,
+  Alert,
 } from 'react-native';
 import {Header, Divider, Text, ThemedView} from 'src/components';
 import Container from 'src/containers/Container';
@@ -15,7 +16,7 @@ import Button from 'src/containers/Button';
 import TextHtml from 'src/containers/TextHtml';
 import {TextHeader, IconHeader} from 'src/containers/HeaderComponent';
 import SocialMethods from './containers/SocialMethods';
-import {rootSwitch, authStack} from 'src/config/navigator';
+import {rootSwitch, authStack} from 'src/config/navigator'; //aa open kr oky
 
 import {signInWithEmail} from 'src/modules/auth/actions';
 import {authSelector} from 'src/modules/auth/selectors';
@@ -25,6 +26,7 @@ import {margin} from 'src/components/config/spacing';
 import {NavigationActions} from 'react-navigation';
 
 import {changeColor} from 'src/utils/text-html';
+import axios from 'axios';
 
 class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -34,8 +36,8 @@ class LoginScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: 'divya@gmail.com',
-      password: 'text@123',
+      username: '',
+      password: '',
       isLogin: 0,
       username1: 'abc@gmail.com',
       password1: 'text@123',
@@ -46,25 +48,59 @@ class LoginScreen extends React.Component {
   handleLogin = async () => {
     // const {username, password, isLogin, username1, password1,sales} = this.state;
     // this.props.dispatch(signInWithEmail({username, password}));
-    if (
-      this.state.username === 'divya@gmail.com' &&
-      this.state.password === 'text@123'
-    ) {
-      this.setState({
-        sales: 'customer',
-      });
-      await AsyncStorage.setItem('logincheck', 'customer');
+    // if (
+    //   this.state.username === 'divya@gmail.com' &&
+    //   this.state.password === 'text@123'
+    // ) {
+    //   this.setState({
+    //     sales: 'customer',
+    //   });
+    //   await AsyncStorage.setItem('logincheck', 'customer');
 
-      const router = rootSwitch.main;
-      this.props.navigation.navigate(router);
+    //   const router = rootSwitch.main;
+    //   this.props.navigation.navigate(router);
+    // } else {
+    //   this.setState({
+    //     sales: 'sales',
+    //   });
+    //   await AsyncStorage.setItem('logincheck', 'sales');
+    //   const router = rootSwitch.main;
+    //   this.props.navigation.navigate(router);
+    // }
+    if (this.state.username === '' && this.state.password === '') {
+      alert('Please Fill the details');
     } else {
-      this.setState({
-        sales: 'sales',
-      });
-      await AsyncStorage.setItem('logincheck', 'sales');
-      const router = rootSwitch.main;
-      this.props.navigation.navigate(router);
+      this.apiCall();
     }
+  };
+  apiCall = () => {
+    console.log('Login button is clicked');
+    const {navigation} = this.props;
+    axios
+      .get('https://bd.zhingtard.com/apidata.php', {
+        params: {
+          username: this.state.username,
+          password: this.state.password,
+        },
+      })
+      .then(async function(response) {
+        console.log(response.data);
+        if (response.data.status === 'true') {
+          if (response.data.data.user_role === 'sales_person') {
+            await AsyncStorage.setItem('logincheck', 'sales_person');
+          } else {
+            await AsyncStorage.setItem('logincheck', 'customer');
+          }
+
+          const router = rootSwitch.main;
+          navigation.navigate(router);
+        } else {
+          alert('Please check your login details');
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   };
 
   render() {

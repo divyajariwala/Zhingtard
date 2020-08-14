@@ -1,6 +1,6 @@
-import { profileStack } from 'src/config/navigator';
+import {profileStack} from 'src/config/navigator';
 
-import { createStackNavigator } from 'react-navigation-stack';
+import {createStackNavigator} from 'react-navigation-stack';
 
 import MeScreen from 'src/screens/profile/me';
 import SettingScreen from 'src/screens/profile/setting';
@@ -19,6 +19,12 @@ import DemoConfig from 'src/screens/profile/demo-config';
 import Vendors from 'src/screens/profile/vendors';
 import ChatVendor from 'src/screens/profile/chat-vendor';
 import EditAccount from 'src/screens/profile/edit-account';
+import Report from 'src/screens/profile/report';
+import Salesperformance from 'src/screens/profile/salesperformance';
+import Addcustomer from 'src/screens/profile/addcustomer';
+import AddOption from 'src/screens/profile/addoptions';
+import Mescreen1 from 'src/screens/profile/me1';
+import CustomerList from 'src/screens/profile/customerlist';
 
 export default createStackNavigator(
   {
@@ -39,10 +45,16 @@ export default createStackNavigator(
     [profileStack.vendors]: Vendors,
     [profileStack.chat_vendor]: ChatVendor,
     [profileStack.edit_account]: EditAccount,
+    [profileStack.report]: Report,
+    [profileStack.salesperformance]: Salesperformance,
+    [profileStack.addcustomer]: Addcustomer,
+    [profileStack.addoptions]: AddOption,
+    [profileStack.me1]: Mescreen1,
+    [profileStack.customerlist]: CustomerList,
   },
   {
     defaultNavigationOptions: {
       header: null,
     },
-  }
+  },
 );

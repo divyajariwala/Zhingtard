@@ -35,23 +35,32 @@ const SettingMe = ({
         chevron
         onPress={() => clickPage(profileStack.setting)}
       />
-       <ListItem
-        leftIcon={icon(0)}
-        title={ }
+      <ListItem
+        leftIcon={icon(1)}
+        title={t('common:text_new_customer')}
         type="underline"
         titleProps={titleProps}
         pad={padding.large}
         chevron
-        onPress={() => clickPage(profileStack.setting)}
+        onPress={() => clickPage(profileStack.me1)}
       />
-       <ListItem
-        leftIcon={icon(0)}
-        title={t('common:text_setting')}
+      <ListItem
+        leftIcon={icon(2)}
+        title={t('text_sales_report')}
         type="underline"
         titleProps={titleProps}
         pad={padding.large}
         chevron
-        onPress={() => clickPage(profileStack.setting)}
+        onPress={() => clickPage(profileStack.report)}
+      />
+      <ListItem
+        leftIcon={icon(0)}
+        title={t('Sales Performance')}
+        type="underline"
+        titleProps={titleProps}
+        pad={padding.large}
+        chevron
+        onPress={() => clickPage(profileStack.salesperformance)}
       />
       {/* <ListItem
         leftIcon={icon(1)}
@@ -72,7 +81,7 @@ const SettingMe = ({
         containerStyle={!isLogin && styles.itemEnd}
         onPress={() => goPhone(`tel:${phonenumber}`)}
       /> */}
- 
+
       <ListItem
         leftIcon={icon(3)}
         title={t('profile:text_signout')}

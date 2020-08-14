@@ -67,7 +67,12 @@
     "text_search_country_mobile" : "Type Here...",
     "text_add" : "Add",
     "text_save" : "Save",
-    "text_sales" : "Sales"
+    "text_sales" : "Sales",
+    "text_sales_report": "Sales Report",
+    "text_sales_performance": "Sales Performance",
+    "text_new_customer": "Add New Customer",
+    "text_customer_list": "Customer List"
+    
   },
   "auth": {
     "text_input_email_address": "Email Address or Username *",
@@ -93,7 +98,8 @@
     "text_button_verify": "Verify Now",
     "text_fill_verify_otp": "Please validate OTP",
     "text_success_verify_otp": "verified!",
-    "text_resend_otp": "Resend verification code?"
+    "text_resend_otp": "Resend verification code?",
+    "text_input_website": "Website"
   },
   "home": {
     "text_getting_start": "Get Started",
@@ -182,7 +188,8 @@
     "text_payment_privacy": "Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our <b>privacy policy</b>.",
     "text_congrats": "Congrats !",
     "text_congrats_description": "Thanks for your purchasing.",
-    "text_shopping": "Continue Shopping"
+    "text_shopping": "Continue Shopping",
+    
   },
   "getting": {
     "text_title_1": "Shopping Smart",

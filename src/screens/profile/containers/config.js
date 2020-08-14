@@ -1,7 +1,7 @@
 import {grey5} from 'src/components/config/colors';
 
 const listIcon = {
-  setting: ['settings', 'help-circle', 'phone-call', 'log-out'],
+  setting: ['settings', 'rocket', 'phone-call', 'log-out'],
   info: ['user', 'file-text', 'message-square']
 };
 

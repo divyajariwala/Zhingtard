@@ -5,8 +5,7 @@ import {StyleSheet, ScrollView, View, Linking} from 'react-native';
 import {Header, ThemedView, Text} from 'src/components';
 
 import HeaderMe from './containers/HeaderMe';
-import SettingMe from './containers/SettingMe';
-import SettingMe1 from './containers/SettingMe1';
+import  AddOption from './addoptions'
 
 import InformationMe from './containers/InformationMe';
 import Container from 'src/containers/Container';
@@ -20,7 +19,7 @@ import {grey5} from 'src/components/config/colors';
 import {margin} from 'src/components/config/spacing';
 import AsyncStorage from '@react-native-community/async-storage';
 
-class MeScreen extends Component {
+class MeScreen1 extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -69,60 +68,16 @@ class MeScreen extends Component {
               isLogin={isLogin}
               clickPage={this.goPageOther}
             /> */}
-            {this.state.check === 'customer' && (
-              <SettingMe
+           
+              <AddOption
                 isLogin={isLogin}
                 clickPage={this.goPageOther}
                 goPhone={this.handleLinkUrl}
                 phonenumber={configs.get('phone')}
               />
-            )}
-            {this.state.check === 'sales_person' && (
-              <SettingMe1
-                isLogin={isLogin}
-                clickPage={this.goPageOther}
-                goPhone={this.handleLinkUrl}
-                phonenumber={configs.get('phone')}
-              />
-            )}
-            {/* <View style={styles.viewSocial}>
-              <SocialIcon
-                light
-                raised={false}
-                type="facebook"
-                style={styles.socialIconStyle}
-                iconSize={15}
-                onPress={() => this.handleLinkUrl(configs.get('facebook'))}
-              />
-
-              <SocialIcon
-                light
-                raised={false}
-                type="instagram"
-                style={styles.socialIconStyle}
-                iconSize={15}
-                onPress={() => this.handleLinkUrl(configs.get('instagram'))}
-              />
-
-              <SocialIcon
-                light
-                raised={false}
-                type="pinterest"
-                style={styles.socialIconStyle}
-                iconSize={15}
-                onPress={() => this.handleLinkUrl(configs.get('pinterest'))}
-              />
-
-              <SocialIcon
-                light
-                raised={false}
-                type="twitter"
-                style={styles.socialIconStyle}
-                iconSize={15}
-                onPress={() => this.handleLinkUrl(configs.get('twitter'))}
-              />
-            </View> */}
-            {/* <Text h6 colorThird>{configs.get('copyright')}</Text> */}
+          
+          
+           
           </Container>
         </ScrollView>
       </ThemedView>
@@ -158,4 +113,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(MeScreen);
+export default connect(mapStateToProps)(MeScreen1);

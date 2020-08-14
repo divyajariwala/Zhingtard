@@ -80,6 +80,12 @@ export const profileStack = {
   vendors: 'VendorsScreen',
   chat_vendor: 'ChatVendorScreen',
   edit_account: 'EditAccountScreen',
+  report: 'report',
+  salesperformance: 'Salesperformance',
+  addcustomer: 'Addcustomer',
+  addoptions: 'AddOption',
+  me1: 'Mescreen1',
+  customerlist: 'CustomerList',
 };
 
 export const rootSwitch = {
