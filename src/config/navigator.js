@@ -86,6 +86,10 @@ export const profileStack = {
   addoptions: 'AddOption',
   me1: 'Mescreen1',
   customerlist: 'CustomerList',
+  salesreportoption: 'SalesReportOptions',
+  me2: 'MeScreen2',
+  offlinecustomer: 'OfflineCustomer',
+  salesreportcustomer: 'Salesreportcustomer',
 };
 
 export const rootSwitch = {

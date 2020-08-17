@@ -51,7 +51,7 @@ const SettingMe = ({
         titleProps={titleProps}
         pad={padding.large}
         chevron
-        onPress={() => clickPage(profileStack.report)}
+        onPress={() => clickPage(profileStack.me2)}
       />
       <ListItem
         leftIcon={icon(0)}

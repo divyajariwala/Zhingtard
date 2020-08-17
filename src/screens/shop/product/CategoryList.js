@@ -29,9 +29,11 @@ const CategoryList = ({onPress, data, theme}) => {
             <Text h6 style={[styles.textName, {color: theme.CategoryProductList.color}]}>
               {value.name}
             </Text>
+           
           </TouchableOpacity>
         ))}
       </ScrollView>
+     
     </View>
   );
 };

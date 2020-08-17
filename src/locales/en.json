@@ -68,10 +68,13 @@
     "text_add" : "Add",
     "text_save" : "Save",
     "text_sales" : "Sales",
-    "text_sales_report": "Sales Report",
+    "text_sales_report": "Daily Sales Report",
     "text_sales_performance": "Sales Performance",
     "text_new_customer": "Add New Customer",
-    "text_customer_list": "Customer List"
+    "text_customer_list": "Customer List",
+    "text_ofline_customer_data": "Ofline Customer Data",
+    "text_customer_details":"Customer Details"
+    
     
   },
   "auth": {

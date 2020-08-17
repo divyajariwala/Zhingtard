@@ -25,6 +25,10 @@ import Addcustomer from 'src/screens/profile/addcustomer';
 import AddOption from 'src/screens/profile/addoptions';
 import Mescreen1 from 'src/screens/profile/me1';
 import CustomerList from 'src/screens/profile/customerlist';
+import SalesReportOptions from 'src/screens/profile/salesreportoption';
+import MeScreen2 from 'src/screens/profile/me2';
+import OfflineCustomer from 'src/screens/profile/offlinecustomer';
+import Salesreportcustomer from 'src/screens/profile/salesreportcustomer';
 
 export default createStackNavigator(
   {
@@ -51,6 +55,10 @@ export default createStackNavigator(
     [profileStack.addoptions]: AddOption,
     [profileStack.me1]: Mescreen1,
     [profileStack.customerlist]: CustomerList,
+    [profileStack.salesreportoption]: SalesReportOptions,
+    [profileStack.me2]: MeScreen2,
+    [profileStack.offlinecustomer]: OfflineCustomer,
+    [profileStack.salesreportcustomer]: Salesreportcustomer,
   },
   {
     defaultNavigationOptions: {

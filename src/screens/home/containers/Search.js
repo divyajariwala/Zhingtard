@@ -72,3 +72,4 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(withTheme(Search));
+

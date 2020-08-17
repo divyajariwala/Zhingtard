@@ -60,6 +60,7 @@ class ProductView extends React.Component {
         refreshing={refreshing}
         onRefresh={handleRefresh}
       />
+    
     );
   }
 }

@@ -11,7 +11,6 @@ import {
   View,
   Switch,
   KeyboardAvoidingView,
-  Alert,
 } from 'react-native';
 import {Header, Loading, Text, ThemedView} from 'src/components';
 import Container from 'src/containers/Container';
@@ -29,15 +28,13 @@ import {validatorRegister} from 'src/modules/auth/validator';
 import {configsSelector, languageSelector} from 'src/modules/common/selectors';
 import {checkPhoneNumber, checkInfo} from 'src/modules/auth/service';
 
-import {rootSwitch, authStack, profileStack} from 'src/config/navigator';
+import {authStack} from 'src/config/navigator';
 import {margin, padding} from 'src/components/config/spacing';
 import {lineHeights} from 'src/components/config/fonts';
 import {changeColor} from 'src/utils/text-html';
 import {showMessage} from 'react-native-flash-message';
-import AsyncStorage from '@react-native-community/async-storage';
-import axios from 'axios';
 
-class Addcustomer extends React.Component {
+class Salesreportcustomer extends React.Component {
   static navigationOptions = {
     header: null,
   };
@@ -45,21 +42,20 @@ class Addcustomer extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      first_name: '',
-      last_name: '',
-      name: '',
-      website: '',
-      email: '',
-      password: '',
-      phone_number: '+91',
-      country_no: '+91',
-      subscribe: false,
-
+      data: {
+        first_name: '',
+        last_name: '',
+        name: '',
+        email: '',
+        password: '',
+        phone_number: '+91',
+        country_no: '+91',
+        subscribe: false,
+      },
       user: null,
       confirmResult: null,
       visibleModal: false,
       loading: false,
-      check: '',
       error: {
         message: null,
         errors: null,
@@ -68,61 +64,92 @@ class Addcustomer extends React.Component {
     this.confirmation = null;
   }
 
-  async componentDidMount() {
-    this.setState({
-      check: await AsyncStorage.getItem('Salepersonid'),
+  componentDidMount() {
+    const {data, confirmResult} = this.state;
+    this.unsubscribe = firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.setState({
+          user,
+          data: {...data, phone_number: user.phoneNumber},
+        });
+        if (confirmResult) {
+          this.register();
+        }
+      }
     });
-    console.log('salespersonid', this.state.check);
   }
+
+  componentWillUnmount() {
+    if (this.unsubscribe) {
+      this.unsubscribe();
+    }
+  }
+
+  changeData = value => {
+    this.setState({
+      data: {
+        ...this.state.data,
+        ...value,
+      },
+    });
+  };
+
+  register = () => {
+    const {data} = this.state;
+    this.setState({loading: false});
+    this.props.dispatch(signUpWithEmail(data));
+  };
 
   /**
    * Handle User register
    */
-
-  handleAddnewCustomer = () => {
-    if (this.state.first_name === '') {
-      alert('Plese enter your firstname');
-    } else if (this.state.last_name === '') {
-      alert('Plese enter your lastname');
-    } else if (this.state.name === '') {
-      alert('Plese enter your username');
-    } else if (this.state.email === '') {
-      alert('Plese enter your email address');
-    } else if (this.state.password === '') {
-      alert('Please enter your password');
-    } else {
-      this.apiCall();
+  handleRegister = async () => {
+    this.setState({
+      loading: true,
+    });
+    try {
+      const {
+        screenProps: {t},
+        language,
+        enablePhoneNumber,
+      } = this.props;
+      const {data, user} = this.state;
+      const {phone_number, country_no} = data;
+      // Register with phone number
+      if (enablePhoneNumber) {
+        // Get user phone number
+        const user_phone_number = phone_number.includes(country_no)
+          ? phone_number
+          : country_no + phone_number;
+        await checkPhoneNumber({
+          phone_number: user_phone_number,
+          type: 'register',
+        });
+        if (!user) {
+          // Send Verify token
+          const confirmResult = await firebase
+            .auth()
+            .signInWithPhoneNumber(user_phone_number);
+          this.setState({
+            confirmResult,
+          });
+        } else {
+          this.register();
+        }
+      } else {
+        this.register();
+      }
+    } catch (e) {
+      showMessage({
+        message: e.message,
+        type: 'danger',
+      });
+      this.setState({
+        loading: false,
+      });
     }
   };
-  apiCall = () => {
-    console.log('Customer add');
-    const {navigation} = this.props;
-    axios
-      .get('https://bd.zhingtard.com/apidata.php', {
-        params: {
-          fname: this.state.first_name,
-          lname: this.state.last_name,
-          username: this.state.name,
-          website: this.state.website,
-          email: this.state.email,
-          password: this.state.password,
-          spid: this.state.check,
-        },
-      })
-      .then(async function(response) {
-        console.log(response.data);
 
-        if (response.data.status === 'true') {
-          const router = profileStack.me1;
-          navigation.navigate(router);
-        } else {
-          alert('Please check your login details');
-        }
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
-  };
   render() {
     const {
       navigation,
@@ -131,16 +158,16 @@ class Addcustomer extends React.Component {
       enablePhoneNumber,
     } = this.props;
     const {
-      // data: {
-      //   email,
-      //   first_name,
-      //   last_name,
-      //   name,
-      //   phone_number,
-      //   country_no,
-      //   password,
-      //   subscribe,
-      // },
+      data: {
+        email,
+        first_name,
+        last_name,
+        name,
+        phone_number,
+        country_no,
+        password,
+        subscribe,
+      },
       error: {message, errors},
       visibleModal,
       loading,
@@ -153,7 +180,7 @@ class Addcustomer extends React.Component {
         <Loading visible={pending} />
         <Header
           leftComponent={<IconHeader />}
-          centerComponent={<TextHeader title={t('common:text_new_customer')} />}
+          centerComponent={<TextHeader title={t('common:text_customer_details')} />}
         />
         <KeyboardAvoidingView
           behavior="height"
@@ -170,48 +197,15 @@ class Addcustomer extends React.Component {
               ) : null}
               <Input
                 label={t('auth:text_input_first_name')}
-                value={this.state.first_name}
-                onChangeText={value => this.setState({first_name: value})}
-              />
-              <Input
-                label={t('auth:text_input_last_name')}
-                value={this.state.last_name}
-                onChangeText={value => this.setState({last_name: value})}
-              />
-              <Input
-                label={t('auth:text_input_user')}
-                value={this.state.name}
-                onChangeText={value => this.setState({name: value})}
-              />
-              <Input
-                label={t('auth:text_input_website')}
-                value={this.state.website}
-                onChangeText={value => this.setState({website: value})}
+                value={first_name}
+                onChangeText={value => this.changeData({first_name: value})}
+                error={errors && errors.first_name}
               />
 
-              <Input
-                label={t('auth:text_input_email')}
-                value={this.state.email}
-                onChangeText={value => this.setState({email: value})}
-              />
-              <Input
-                label={t('auth:text_input_password')}
-                value={this.state.password}
-                secureTextEntry
-                onChangeText={value => this.setState({password: value})}
-              />
-              <View style={styles.viewSwitch}>
-                <Text style={styles.textSwitch} colorSecondary>
-                  {t('auth:text_agree_register')}
-                </Text>
-                <Switch
-                  value={this.state.subscribe}
-                  onValueChange={value => this.setState({subscribe: value})}
-                />
-              </View>
+           
               <Button
                 title={t('common:text_new_customer')}
-                onPress={this.handleAddnewCustomer}
+                onPress={this.handleRegister}
                 loading={loading}
               />
               {/* <SocialMethods style={styles.viewAccount} /> */}
@@ -283,4 +277,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(Addcustomer);
+export default connect(mapStateToProps)(Salesreportcustomer);

@@ -16,7 +16,7 @@ import Button from 'src/containers/Button';
 import TextHtml from 'src/containers/TextHtml';
 import {TextHeader, IconHeader} from 'src/containers/HeaderComponent';
 import SocialMethods from './containers/SocialMethods';
-import {rootSwitch, authStack} from 'src/config/navigator'; //aa open kr oky
+import {rootSwitch, authStack} from 'src/config/navigator'; 
 
 import {signInWithEmail} from 'src/modules/auth/actions';
 import {authSelector} from 'src/modules/auth/selectors';
@@ -46,27 +46,7 @@ class LoginScreen extends React.Component {
   }
 
   handleLogin = async () => {
-    // const {username, password, isLogin, username1, password1,sales} = this.state;
-    // this.props.dispatch(signInWithEmail({username, password}));
-    // if (
-    //   this.state.username === 'divya@gmail.com' &&
-    //   this.state.password === 'text@123'
-    // ) {
-    //   this.setState({
-    //     sales: 'customer',
-    //   });
-    //   await AsyncStorage.setItem('logincheck', 'customer');
-
-    //   const router = rootSwitch.main;
-    //   this.props.navigation.navigate(router);
-    // } else {
-    //   this.setState({
-    //     sales: 'sales',
-    //   });
-    //   await AsyncStorage.setItem('logincheck', 'sales');
-    //   const router = rootSwitch.main;
-    //   this.props.navigation.navigate(router);
-    // }
+    
     if (this.state.username === '' && this.state.password === '') {
       alert('Please Fill the details');
     } else {
@@ -85,9 +65,13 @@ class LoginScreen extends React.Component {
       })
       .then(async function(response) {
         console.log(response.data);
+        console.log(response.data.data.user_id);
+        const salespersonid = response.data.data.user_id;
+        console.log('salespersonid', salespersonid);
         if (response.data.status === 'true') {
           if (response.data.data.user_role === 'sales_person') {
             await AsyncStorage.setItem('logincheck', 'sales_person');
+            await AsyncStorage.setItem('Salepersonid', salespersonid);
           } else {
             await AsyncStorage.setItem('logincheck', 'customer');
           }
