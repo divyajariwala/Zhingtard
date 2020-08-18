@@ -90,6 +90,7 @@ export const profileStack = {
   me2: 'MeScreen2',
   offlinecustomer: 'OfflineCustomer',
   salesreportcustomer: 'Salesreportcustomer',
+  editcustomer: 'editcustomer',
 };
 
 export const rootSwitch = {

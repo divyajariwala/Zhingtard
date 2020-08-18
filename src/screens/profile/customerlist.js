@@ -47,8 +47,8 @@ class CustomerList extends React.Component {
     header: null,
   };
 
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props);
     this.state = {
       customerList: [],
       check: '',
@@ -67,18 +67,52 @@ class CustomerList extends React.Component {
           spid: this.state.check,
         },
       })
-      .then(function(response) {
+      .then(response => {
         console.log(response.data);
         console.log(response.data.data);
-        this.state.customerList = response.data.data;
+        this.setState({
+          customerList: response.data.data,
+        });
         console.log('customer list', this.state.customerList);
       })
       .catch(function(error) {
         console.log(error);
       });
   }
-  goProducts = () => {
-    console.log('customer is click');
+  goToDetails = Userid => {
+    const {navigation} = this.props;
+    //console.log('customer is click');
+    axios
+      .get('https://bd.zhingtard.com/apidata.php', {
+        params: {
+          spid: this.state.check,
+          userid: Userid,
+          action: 'edit',
+        },
+      })
+      .then(async response => {
+        console.log(response.data);
+        if (response.data.status === 'true') {
+          await AsyncStorage.setItem('@userid', response.data.data.user_id);
+          await AsyncStorage.setItem(
+            '@firstname',
+            response.data.data.first_name,
+          );
+          await AsyncStorage.setItem('@lastname', response.data.data.last_name);
+          await AsyncStorage.setItem(
+            '@username',
+            response.data.data.user_login,
+          );
+          await AsyncStorage.setItem('@website', response.data.data.website);
+          await AsyncStorage.setItem('@email', response.data.data.email);
+
+          const router = profileStack.editcustomer;
+          navigation.navigate(router);
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
   };
   render() {
     const {
@@ -96,40 +130,27 @@ class CustomerList extends React.Component {
             <TextHeader title={t('common:text_customer_list')} />
           }
         />
-        <KeyboardAvoidingView
-          behavior="height"
-          style={styles.keyboard}
-          // contentContainerStyle={{flex: 1}}
-        >
-          <Container style={styles.content}>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              showsVerticalScrollIndicator={false}
-              keyExtractor={item => `${item.id}`}
-              data={this.state.customerList}
-              renderItem={({item}) => (
-                <ListItem
-                  title={unescape(item.name)}
-                  titleProps={{
-                    h4: true,
-                  }}
-                  rightIcon={
-                    <Badge
-                      status="grey2"
-                      value={item.count}
-                      badgeStyle={styles.badge}
-                      textStyle={styles.textBadge}
-                    />
-                  }
-                  chevron
-                  onPress={() => this.goProducts(item)}
-                  style={styles.item}
-                  containerStyle={{paddingVertical: padding.base}}
-                />
-              )}
-            />
-          </Container>
-        </KeyboardAvoidingView>
+
+        <Container style={styles.content}>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={item => `${item.user_id}`}
+            data={this.state.customerList}
+            renderItem={({item}) => (
+              <ListItem
+                title={unescape(item.first_name)}
+                titleProps={{
+                  h4: true,
+                }}
+                chevron
+                onPress={() => this.goToDetails(item.user_id)}
+                style={styles.item}
+                containerStyle={{paddingVertical: padding.base}}
+              />
+            )}
+          />
+        </Container>
       </ThemedView>
     );
   }

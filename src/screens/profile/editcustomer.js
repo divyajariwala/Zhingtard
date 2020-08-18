@@ -37,7 +37,7 @@ import {showMessage} from 'react-native-flash-message';
 import AsyncStorage from '@react-native-community/async-storage';
 import axios from 'axios';
 
-class Addcustomer extends React.Component {
+class editcustomer extends React.Component {
   static navigationOptions = {
     header: null,
   };
@@ -54,6 +54,7 @@ class Addcustomer extends React.Component {
       phone_number: '+91',
       country_no: '+91',
       subscribe: false,
+      userid: '',
 
       user: null,
       confirmResult: null,
@@ -70,9 +71,19 @@ class Addcustomer extends React.Component {
 
   async componentDidMount() {
     this.setState({
-      check: await AsyncStorage.getItem('Salepersonid'),
+      userid: await AsyncStorage.getItem('@userid'),
+      first_name: await AsyncStorage.getItem('@firstname'),
+      last_name: await AsyncStorage.getItem('@lastname'),
+      name: await AsyncStorage.getItem('@username'),
+      website: await AsyncStorage.getItem('@website'),
+      email: await AsyncStorage.getItem('@email'),
     });
-    console.log('salespersonid', this.state.check);
+    console.log('userid', this.state.userid);
+    console.log('firstname', this.state.first_name);
+    console.log('lastname', this.state.last_name);
+    console.log('name', this.state.name);
+    console.log('website', this.state.website);
+    console.log('email', this.state.email);
   }
 
   /**
@@ -80,19 +91,7 @@ class Addcustomer extends React.Component {
    */
 
   handleAddnewCustomer = () => {
-    if (this.state.first_name === '') {
-      alert('Plese enter your firstname');
-    } else if (this.state.last_name === '') {
-      alert('Plese enter your lastname');
-    } else if (this.state.name === '') {
-      alert('Plese enter your username');
-    } else if (this.state.email === '') {
-      alert('Plese enter your email address');
-    } else if (this.state.password === '') {
-      alert('Please enter your password');
-    } else {
-      this.apiCall();
-    }
+    this.apiCall();
   };
   apiCall = () => {
     console.log('Customer add');
@@ -100,13 +99,11 @@ class Addcustomer extends React.Component {
     axios
       .get('https://bd.zhingtard.com/apidata.php', {
         params: {
-          fname: this.state.first_name,
-          lname: this.state.last_name,
+          userid: this.state.userid,
+          action: 'update',
           username: this.state.name,
-          website: this.state.website,
           email: this.state.email,
-          password: this.state.password,
-          spid: this.state.check,
+          website: this.state.website,
         },
       })
       .then(async function(response) {
@@ -115,8 +112,6 @@ class Addcustomer extends React.Component {
         if (response.data.status === 'true') {
           const router = profileStack.me1;
           navigation.navigate(router);
-        } else {
-          alert('Please check your login details');
         }
       })
       .catch(function(error) {
@@ -153,7 +148,9 @@ class Addcustomer extends React.Component {
         <Loading visible={pending} />
         <Header
           leftComponent={<IconHeader />}
-          centerComponent={<TextHeader title={t('common:text_new_customer')} />}
+          centerComponent={
+            <TextHeader title={t('common:text_edit_customer')} />
+          }
         />
         <KeyboardAvoidingView
           behavior="height"
@@ -196,7 +193,7 @@ class Addcustomer extends React.Component {
               />
               <Input
                 label={t('auth:text_input_password')}
-                value={this.state.password}
+                value={'••••••••••'}
                 secureTextEntry
                 onChangeText={value => this.setState({password: value})}
               />
@@ -210,11 +207,10 @@ class Addcustomer extends React.Component {
                 />
               </View>
               <Button
-                title={t('common:text_new_customer')}
+                title={t('common:text_edit_customer')}
                 onPress={this.handleAddnewCustomer}
                 loading={loading}
               />
-             
             </Container>
           </ScrollView>
         </KeyboardAvoidingView>
@@ -257,4 +253,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(Addcustomer);
+export default connect(mapStateToProps)(editcustomer);

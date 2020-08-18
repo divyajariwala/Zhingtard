@@ -11,8 +11,16 @@ import {
   View,
   Switch,
   KeyboardAvoidingView,
+  FlatList,
 } from 'react-native';
-import {Header, Loading, Text, ThemedView} from 'src/components';
+import {
+  Header,
+  Loading,
+  Text,
+  ThemedView,
+  Badge,
+  ListItem,
+} from 'src/components';
 import Container from 'src/containers/Container';
 import Input from 'src/containers/input/Input';
 import InputMobile from 'src/containers/input/InputMobile';
@@ -26,130 +34,86 @@ import {signUpWithEmail} from 'src/modules/auth/actions';
 import {authSelector} from 'src/modules/auth/selectors';
 import {validatorRegister} from 'src/modules/auth/validator';
 import {configsSelector, languageSelector} from 'src/modules/common/selectors';
-import {checkPhoneNumber, checkInfo} from 'src/modules/auth/service';
 
-import {authStack} from 'src/config/navigator';
-import {margin, padding} from 'src/components/config/spacing';
-import {lineHeights} from 'src/components/config/fonts';
-import {changeColor} from 'src/utils/text-html';
-import {showMessage} from 'react-native-flash-message';
+import {authStack, profileStack} from 'src/config/navigator';
+import {margin, padding, borderRadius} from 'src/components/config/spacing';
+import {grey6} from 'src/components/config/colors';
+import unescape from 'lodash/unescape';
+import axios from 'axios';
+import AsyncStorage from '@react-native-community/async-storage';
 
 class OfflineCustomer extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
-  constructor(props, context) {
-    super(props, context);
+  constructor(props) {
+    super(props);
     this.state = {
-      data: {
-        first_name: '',
-        last_name: '',
-        name: '',
-        email: '',
-        password: '',
-        phone_number: '+91',
-        country_no: '+91',
-        subscribe: false,
-      },
-      user: null,
-      confirmResult: null,
-      visibleModal: false,
-      loading: false,
-      error: {
-        message: null,
-        errors: null,
-      },
+      customerList: [],
+      check: '',
     };
-    this.confirmation = null;
   }
+  async componentDidMount() {
+    this.setState({
+      check: await AsyncStorage.getItem('Salepersonid'),
+    });
+    console.log('salespersonid', this.state.check);
 
-  componentDidMount() {
-    const {data, confirmResult} = this.state;
-    this.unsubscribe = firebase.auth().onAuthStateChanged(user => {
-      if (user) {
+    axios
+      .get('https://bd.zhingtard.com/apidata.php', {
+        params: {
+          login: '1',
+          spid: this.state.check,
+        },
+      })
+      .then(response => {
+        console.log(response.data);
+        console.log(response.data.data);
         this.setState({
-          user,
-          data: {...data, phone_number: user.phoneNumber},
+          customerList: response.data.data,
         });
-        if (confirmResult) {
-          this.register();
-        }
-      }
-    });
-  }
-
-  componentWillUnmount() {
-    if (this.unsubscribe) {
-      this.unsubscribe();
-    }
-  }
-
-  changeData = value => {
-    this.setState({
-      data: {
-        ...this.state.data,
-        ...value,
-      },
-    });
-  };
-
-  register = () => {
-    const {data} = this.state;
-    this.setState({loading: false});
-    this.props.dispatch(signUpWithEmail(data));
-  };
-
-  /**
-   * Handle User register
-   */
-  handleRegister = async () => {
-    this.setState({
-      loading: true,
-    });
-    try {
-      const {
-        screenProps: {t},
-        language,
-        enablePhoneNumber,
-      } = this.props;
-      const {data, user} = this.state;
-      const {phone_number, country_no} = data;
-      // Register with phone number
-      if (enablePhoneNumber) {
-        // Get user phone number
-        const user_phone_number = phone_number.includes(country_no)
-          ? phone_number
-          : country_no + phone_number;
-        await checkPhoneNumber({
-          phone_number: user_phone_number,
-          type: 'register',
-        });
-        if (!user) {
-          // Send Verify token
-          const confirmResult = await firebase
-            .auth()
-            .signInWithPhoneNumber(user_phone_number);
-          this.setState({
-            confirmResult,
-          });
-        } else {
-          this.register();
-        }
-      } else {
-        this.register();
-      }
-    } catch (e) {
-      showMessage({
-        message: e.message,
-        type: 'danger',
+        console.log('customer list', this.state.customerList);
+      })
+      .catch(function(error) {
+        console.log(error);
       });
-      this.setState({
-        loading: false,
-      });
-    }
-  };
+  }
+  goToDetails = Userid => {
+    const {navigation} = this.props;
+    //console.log('customer is click');
+    axios
+      .get('https://bd.zhingtard.com/apidata.php', {
+        params: {
+          spid: this.state.check,
+          userid: Userid,
+          action: 'edit',
+        },
+      })
+      .then(async response => {
+        console.log(response.data);
+        if (response.data.status === 'true') {
+          await AsyncStorage.setItem('@userid', response.data.data.user_id);
+          await AsyncStorage.setItem(
+            '@firstname',
+            response.data.data.first_name,
+          );
+          await AsyncStorage.setItem('@lastname', response.data.data.last_name);
+          await AsyncStorage.setItem(
+            '@username',
+            response.data.data.user_login,
+          );
+          await AsyncStorage.setItem('@website', response.data.data.website);
+          await AsyncStorage.setItem('@email', response.data.data.email);
 
+          const router = profileStack.editcustomer;
+          navigation.navigate(router);
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
   render() {
     const {
       navigation,
@@ -157,67 +121,71 @@ class OfflineCustomer extends React.Component {
       screenProps: {t, theme},
       enablePhoneNumber,
     } = this.props;
-    const {
-      data: {
-        email,
-        first_name,
-        last_name,
-        name,
-        phone_number,
-        country_no,
-        password,
-        subscribe,
-      },
-      error: {message, errors},
-      visibleModal,
-      loading,
-      user,
-      confirmResult,
-    } = this.state;
-    const visible = visibleModal || !!(!user && confirmResult);
+
     return (
       <ThemedView isFullView>
-        <Loading visible={pending} />
         <Header
           leftComponent={<IconHeader />}
-          centerComponent={<TextHeader title={t('text_ofline_customer_data')} />}
+          centerComponent={
+            <TextHeader title={t('common:text_ofline_customer_data')} />
+          }
         />
-        <KeyboardAvoidingView
-          behavior="height"
-          style={styles.keyboard}
-          // contentContainerStyle={{flex: 1}}
-        >
-          <ScrollView>
-            <Text>Customer</Text>
-          </ScrollView>
-        </KeyboardAvoidingView>
+
+        <Container style={styles.content}>
+          <FlatList
+            showsHorizontalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
+            keyExtractor={item => `${item.user_id}`}
+            data={[
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+              {first_name: 'Test'},
+            ]}
+            renderItem={({item}) => (
+              <ListItem
+                title={unescape(item.first_name)}
+                titleProps={{
+                  h4: true,
+                }}
+                chevron
+                onPress={() => this.goToDetails(item.user_id)}
+                style={styles.item}
+                containerStyle={{paddingVertical: padding.base}}
+              />
+            )}
+          />
+        </Container>
       </ThemedView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  keyboard: {
+  notification: {
+    marginBottom: margin.base,
+    marginTop: margin.large,
+  },
+  content: {
     flex: 1,
   },
-  viewSwitch: {
-    marginVertical: margin.big,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+  item: {
+    marginBottom: margin.base,
   },
-  textSwitch: {
-    flex: 1,
-    lineHeight: lineHeights.h4,
-    marginRight: margin.large,
+  badge: {
+    minWidth: 18,
+    height: 18,
+    borderRadius: borderRadius.base + 1,
   },
-  viewAccount: {
-    marginVertical: margin.big,
-  },
-  textHaveAccount: {
-    paddingVertical: padding.small,
-    marginTop: margin.base,
-    marginBottom: margin.big,
-    textAlign: 'center',
+  textBadge: {
+    lineHeight: 18,
+    color: grey6,
   },
 });
 
