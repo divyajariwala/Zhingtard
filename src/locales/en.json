@@ -63,20 +63,20 @@
     "text_shopping_now": "Shopping now",
     "text_go_shopping": "Go Shopping",
     "text_sale_percent": "Sale {{percent}}%",
-    "text_help" : "Help & Info",
-    "text_search_country_mobile" : "Type Here...",
-    "text_add" : "Add",
-    "text_save" : "Save",
-    "text_sales" : "Sales",
+    "text_help": "Help & Info",
+    "text_search_country_mobile": "Type Here...",
+    "text_add": "Add",
+    "text_save": "Save",
+    "text_sales": "Sales",
     "text_sales_report": "Daily Sales Report",
     "text_sales_performance": "Sales Performance",
     "text_new_customer": "Add New Customer",
     "text_customer_list": "Customer List",
     "text_ofline_customer_data": "Ofline Customer Data",
-    "text_customer_details":"Customer Details",
-    "text_edit_customer":"Edit Customer Details"
-    
-    
+    "text_customer_details": "Customer Details",
+    "text_edit_customer": "Edit Customer Details",
+    "text_upload_profile_picture": "Upload Your Profile Picture",
+    "text_tap_for_the_current_location": "Tap for the current location"
   },
   "auth": {
     "text_input_email_address": "Email Address or Username *",
@@ -103,7 +103,10 @@
     "text_fill_verify_otp": "Please validate OTP",
     "text_success_verify_otp": "verified!",
     "text_resend_otp": "Resend verification code?",
-    "text_input_website": "Website"
+    "text_input_website": "Website",
+    "text_street_name": "Street *",
+    "text_area_name": "Area *",
+    "text_notes": "Notes"
   },
   "home": {
     "text_getting_start": "Get Started",
@@ -192,8 +195,7 @@
     "text_payment_privacy": "Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our <b>privacy policy</b>.",
     "text_congrats": "Congrats !",
     "text_congrats_description": "Thanks for your purchasing.",
-    "text_shopping": "Continue Shopping",
-    
+    "text_shopping": "Continue Shopping"
   },
   "getting": {
     "text_title_1": "Shopping Smart",
@@ -273,7 +275,7 @@
     "text_research": "Research",
     "text_about_description": "This Privacy Policy sets out the information that we collect, the reasons for which we collect that information, and how we can use and share that information.",
 
-    "text_description_edit_account" : "This will be how your name will be displayed in the account section and in reviews."
+    "text_description_edit_account": "This will be how your name will be displayed in the account section and in reviews."
   },
   "blog": {
     "text_lastest": "Lastest",
@@ -319,7 +321,7 @@
     "text_title_order": "You have not order yet",
     "text_subtitle_order": "Keep track of your orders and returns"
   },
-  "validators" : {
+  "validators": {
     "text_email": "E-Mail does not appear to be valid!",
     "text_password": "Password must be between 6 and 20 characters!",
     "text_first_name": "First Name must be between 1 and 32 characters!",

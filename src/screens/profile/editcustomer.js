@@ -106,7 +106,7 @@ class editcustomer extends React.Component {
           website: this.state.website,
         },
       })
-      .then(async function(response) {
+      .then(function(response) {
         console.log(response.data);
 
         if (response.data.status === 'true') {
@@ -169,16 +169,19 @@ class editcustomer extends React.Component {
                 label={t('auth:text_input_first_name')}
                 value={this.state.first_name}
                 onChangeText={value => this.setState({first_name: value})}
+                editable={false}
               />
               <Input
                 label={t('auth:text_input_last_name')}
                 value={this.state.last_name}
                 onChangeText={value => this.setState({last_name: value})}
+                editable={false}
               />
               <Input
                 label={t('auth:text_input_user')}
                 value={this.state.name}
                 onChangeText={value => this.setState({name: value})}
+                editable={false}
               />
               <Input
                 label={t('auth:text_input_website')}
@@ -196,6 +199,7 @@ class editcustomer extends React.Component {
                 value={'••••••••••'}
                 secureTextEntry
                 onChangeText={value => this.setState({password: value})}
+                editable={false}
               />
               <View style={styles.viewSwitch}>
                 <Text style={styles.textSwitch} colorSecondary>
