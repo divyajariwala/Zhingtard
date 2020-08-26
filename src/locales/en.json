@@ -75,8 +75,11 @@
     "text_ofline_customer_data": "Ofline Customer Data",
     "text_customer_details": "Customer Details",
     "text_edit_customer": "Edit Customer Details",
-    "text_upload_profile_picture": "Upload Your Profile Picture",
-    "text_tap_for_the_current_location": "Tap for the current location"
+    "text_upload_profile_picture": "Upload Customer Location Image",
+    "text_tap_for_the_current_location": "Tap for the current location",
+    "text_current_date_time": "Current Date & Time :-",
+    "text_add_new_customer_report": "Add New Customer Report",
+    "text_submit_data_online": "Submit Data Online"
   },
   "auth": {
     "text_input_email_address": "Email Address or Username *",

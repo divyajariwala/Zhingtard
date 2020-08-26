@@ -91,6 +91,7 @@ export const profileStack = {
   offlinecustomer: 'OfflineCustomer',
   salesreportcustomer: 'Salesreportcustomer',
   editcustomer: 'editcustomer',
+  salesreportc: 'salesreportc',
 };
 
 export const rootSwitch = {

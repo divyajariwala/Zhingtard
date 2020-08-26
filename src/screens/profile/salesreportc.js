@@ -22,11 +22,13 @@ import {
   ListItem,
 } from 'src/components';
 import Container from 'src/containers/Container';
-import Input from 'src/containers/input/Input';
-import Button from 'src/containers/Button';
+
 import {TextHeader, IconHeader} from 'src/containers/HeaderComponent';
+// import ModalVerify from './containers/ModalVerify';
+// import SocialMethods from './containers/SocialMethods';
 
 import {authSelector} from 'src/modules/auth/selectors';
+import {validatorRegister} from 'src/modules/auth/validator';
 import {configsSelector, languageSelector} from 'src/modules/common/selectors';
 
 import {authStack, profileStack} from 'src/config/navigator';
@@ -34,15 +36,9 @@ import {margin, padding, borderRadius} from 'src/components/config/spacing';
 import {grey6} from 'src/components/config/colors';
 import unescape from 'lodash/unescape';
 import axios from 'axios';
-
 import {Searchbar} from 'react-native-paper';
 
-import {openDatabase} from 'react-native-sqlite-storage';
-var db = openDatabase({
-  name: 'SQLite.db',
-});
-
-class OfflineCustomer extends React.Component {
+class salesreportc extends React.Component {
   static navigationOptions = {
     header: null,
   };
@@ -57,68 +53,31 @@ class OfflineCustomer extends React.Component {
     };
   }
   async componentDidMount() {
-    db.transaction(tx => {
-      tx.executeSql('select * from Userdata1 ', [], (tx, results) => {
-        var resultItemIdArr = new Array();
-        for (let i = 0; i < results.rows.length; i++) {
-          resultItemIdArr.push(results.rows.item(i));
-        }
+    axios
+      .get('https://bd.zhingtard.com/apidata.php', {
+        params: {
+          action: 'get_customer_data',
+        },
+      })
+      .then(response => {
+        console.log(response.data);
+        console.log(response.data.data);
         this.setState({
-          customerList: resultItemIdArr,
-          arrayholder: resultItemIdArr,
+          customerList: response.data.data,
+          arrayholder: response.data.data,
         });
+        console.log('customer list', this.state.customerList);
+      })
+      .catch(function(error) {
+        console.log(error);
       });
-    });
   }
-  submitDataOnline = async () => {
-    db.transaction(tx => {
-      tx.executeSql('select * from Userdata1 ', [], (tx, results) => {
-        var resultItemIdArr = new Array();
-        for (let i = 0; i < results.rows.length; i++) {
-          resultItemIdArr.push(results.rows.item(i));
-        }
-        this.setState({
-          customerList: resultItemIdArr,
-        });
-      });
-    });
-    console.log('Function call');
-
-    for (let i = 0; i <= this.state.customerList.length; i++) {
-      await axios
-        .get('https://bd.zhingtard.com/apidata.php', {
-          params: {
-            action: 'addcd',
-            photo: '',
-            fname: this.state.customerList[i].FirstName,
-            street: this.state.customerList[i].Street,
-            area: this.state.customerList[i].Area,
-            phnumber: this.state.customerList[i].PhoneNumber,
-            notes: this.state.customerList[i].Notes,
-            customercategory: this.state.customerList[i].CustomerCategory,
-            currentlocation: 'current_loca',
-            datetime: this.state.customerList[i].DateTime,
-            filename: '',
-          },
-        })
-
-        .then(response => {
-          console.log(response.data);
-
-          console.log('customer list', this.state.customerList);
-        })
-
-        .catch(function(error) {
-          console.log(error);
-        });
-    }
-  };
   SearchFilterFunction(text) {
     //passing the inserted text in textinput
     const newData = this.state.arrayholder.filter(function(item) {
       //applying filter for the inserted text in search bar
-      const itemData = item.FirstName
-        ? item.FirstName.toUpperCase()
+      const itemData = item.c_fname
+        ? item.c_fname.toUpperCase()
         : ''.toUpperCase();
       const textData = text.toUpperCase();
       return itemData.indexOf(textData) > -1;
@@ -137,7 +96,6 @@ class OfflineCustomer extends React.Component {
       auth: {pending},
       screenProps: {t, theme},
       enablePhoneNumber,
-      ...rest
     } = this.props;
 
     return (
@@ -145,7 +103,7 @@ class OfflineCustomer extends React.Component {
         <Header
           leftComponent={<IconHeader />}
           centerComponent={
-            <TextHeader title={t('common:text_ofline_customer_data')} />
+            <TextHeader title={t('common:text_customer_list')} />
           }
         />
 
@@ -155,7 +113,6 @@ class OfflineCustomer extends React.Component {
             onChangeText={text => this.SearchFilterFunction(text)}
             value={this.state.searchQuery}
           />
-
           <FlatList
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
@@ -163,19 +120,14 @@ class OfflineCustomer extends React.Component {
             data={this.state.customerList}
             renderItem={({item}) => (
               <ListItem
-                title={unescape(item.FirstName)}
+                title={unescape(item.c_fname)}
                 titleProps={{
                   h4: true,
                 }}
-                chevron
                 style={styles.item}
                 containerStyle={{paddingVertical: padding.base}}
               />
             )}
-          />
-          <Button
-            onPress={() => this.submitDataOnline()}
-            title={t('common:text_submit_data_online')}
           />
         </Container>
       </ThemedView>
@@ -215,4 +167,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(OfflineCustomer);
+export default connect(mapStateToProps)(salesreportc);

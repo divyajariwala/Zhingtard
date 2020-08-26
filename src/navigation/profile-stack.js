@@ -30,6 +30,7 @@ import MeScreen2 from 'src/screens/profile/me2';
 import OfflineCustomer from 'src/screens/profile/offlinecustomer';
 import Salesreportcustomer from 'src/screens/profile/salesreportcustomer';
 import editcustomer from 'src/screens/profile/editcustomer';
+import salesreportc from 'src/screens/profile/salesreportc';
 
 export default createStackNavigator(
   {
@@ -61,6 +62,7 @@ export default createStackNavigator(
     [profileStack.offlinecustomer]: OfflineCustomer,
     [profileStack.salesreportcustomer]: Salesreportcustomer,
     [profileStack.editcustomer]: editcustomer,
+    [profileStack.salesreportc]: salesreportc,
   },
   {
     defaultNavigationOptions: {

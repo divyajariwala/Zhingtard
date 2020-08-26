@@ -15,6 +15,7 @@ import {
   Image,
   PermissionsAndroid,
   Platform,
+  Alert,
 } from 'react-native';
 import {Header, Loading, Text, ThemedView} from 'src/components';
 import Container from 'src/containers/Container';
@@ -46,7 +47,12 @@ import {
 import normalize from 'react-native-normalize';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Geolocation from '@react-native-community/geolocation';
+import axios from 'axios';
 
+import {openDatabase} from 'react-native-sqlite-storage';
+var db = openDatabase({
+  name: 'SQLite.db',
+});
 class Salesreportcustomer extends React.Component {
   static navigationOptions = {
     header: null,
@@ -55,34 +61,101 @@ class Salesreportcustomer extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      data: {
-        first_name: '',
-        last_name: '',
-        name: '',
-        email: '',
-        password: '',
-        phone_number: '+91',
-        country_no: '+91',
-        subscribe: false,
-      },
+      fisrtname: '',
+      street: '',
+      area: '',
+      phone_number: '+60',
+      notes: '',
+
+      country_no: '+60',
       user: null,
       filePath: '',
       Image: '',
+      fileName: '',
       customerCategory: '',
       confirmResult: null,
       visibleModal: false,
       loading: false,
       currentLongitude: '',
       currentLatitude: '',
+      dateTime: '',
       error: {
         message: null,
         errors: null,
       },
     };
+
     this.confirmation = null;
   }
 
-  componentDidMount() {}
+  componentDidMount() {
+    db.transaction(function(txn) {
+      txn.executeSql(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='Userdata1'",
+        [],
+        function(tx, res) {
+          if (res.rows.length == 0) {
+            txn.executeSql(
+              'CREATE TABLE IF NOT EXISTS Userdata1(Id INTEGER PRIMARY KEY AUTOINCREMENT,Profile VARCHAR(255),FirstName VARCHAR(25),Street VARCHAR(30),Area VARCHAR(30),PhoneNumber INTEGER,Notes VARCHAR(250),CustomerCategory VARCHAR(20),DateTime DATE)',
+              [],
+            );
+          }
+        },
+      );
+    });
+    var date = new Date().getDate();
+    var month = new Date().getMonth() + 1;
+    var year = new Date().getFullYear();
+    var hours = new Date().getHours();
+    var min = new Date().getMinutes();
+    var sec = new Date().getSeconds();
+    this.setState({
+      dateTime:
+        month + '/' + date + '/' + year + ' ' + hours + ':' + min + ':' + sec,
+    });
+  }
+  SelectQuery = () => {
+    console.log('This Function Call');
+    const {firstname} = this.state;
+    const {street} = this.state;
+    const {area} = this.state;
+    const {phone_number} = this.state;
+    const {notes} = this.state;
+    const {customerCategory} = this.state;
+    const {dateTime} = this.state;
+    db.transaction(tx => {
+      tx.executeSql(
+        'INSERT INTO Userdata1(Profile,FirstName,Street,Area,PhoneNumber,Notes,CustomerCategory,DateTime) VALUES(?,?,?,?,?,?,?,?)',
+        [
+          null,
+          firstname,
+          street,
+          area,
+          phone_number,
+          notes,
+          customerCategory,
+          dateTime,
+        ],
+        (tx, results) => {
+          console.log('Results', results.rowsAffected);
+          if (results.rowsAffected > 0) {
+            Alert.alert(
+              'Success',
+              'You are Registered Successfully',
+              [
+                {
+                  text: 'Ok',
+                },
+              ],
+              {cancelable: false},
+            );
+          } else {
+            alert('Registration Failed');
+          }
+        },
+      );
+    });
+  };
   getLocation = () => {
     console.log('this function is called ');
     var that = this;
@@ -177,31 +250,51 @@ class Salesreportcustomer extends React.Component {
         //let source = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({
           filePath: source,
-          image: response.data,
+          Image: response.data,
+          fileName: response.fileName,
         });
+        console.log('Image data', this.state.Image);
         console.log('Image file path', this.state.filePath);
+        console.log('File name', this.state.fileName);
       }
     });
   };
+  // apiCall = () => {
+  //   axios
+  //     .get('https://bd.zhingtard.com/apidata.php', {
+  //       params: {
+  //         action: 'addcd',
+  //         photo: this.state.Image,
+  //         fname: 'test',
+  //         street: 'xyz',
+  //         area: 'demo',
 
+  //         phnumber: '9913590678',
+  //         notes: 'test%20notes',
+  //         customercategory: 'c_category',
+  //         currentlocation: 'current_loca',
+  //         datetime: '1',
+  //         filename: 'IMG_20200820_025414.jpg',
+  //       },
+  //     })
+  //     .then(response => {
+  //       console.log('response', response.data);
+  //       if (response.data.status === 'true') {
+  //         console.log('APi call');
+  //       }
+  //     })
+  //     .catch(function(error) {
+  //       console.log(error);
+  //     });
+  // };
   render() {
     const {
       navigation,
-      auth: {pending},
+      // auth: {pending},
       screenProps: {t, theme},
       enablePhoneNumber,
     } = this.props;
     const {
-      data: {
-        email,
-        first_name,
-        last_name,
-        name,
-        phone_number,
-        country_no,
-        password,
-        subscribe,
-      },
       error: {message, errors},
       visibleModal,
       loading,
@@ -211,7 +304,7 @@ class Salesreportcustomer extends React.Component {
     const visible = visibleModal || !!(!user && confirmResult);
     return (
       <ThemedView isFullView>
-        <Loading visible={pending} />
+        {/* <Loading visible={pending} /> */}
         <Header
           leftComponent={<IconHeader />}
           centerComponent={
@@ -251,38 +344,38 @@ class Salesreportcustomer extends React.Component {
               </View>
               <Input
                 label={t('auth:text_input_first_name')}
-                value={first_name}
-                onChangeText={value => this.changeData({first_name: value})}
-                error={errors && errors.first_name}
+                value={this.state.firstname}
+                onChangeText={value => this.setState({firstname: value})}
+                error={errors && errors.firstname}
               />
               <Input
                 label={t('auth:text_street_name')}
-                value={first_name}
-                onChangeText={value => this.changeData({first_name: value})}
-                error={errors && errors.first_name}
+                value={this.state.street}
+                onChangeText={value => this.setState({street: value})}
+                error={errors && errors.street}
               />
               <Input
                 label={t('auth:text_area_name')}
-                value={first_name}
-                onChangeText={value => this.changeData({first_name: value})}
-                error={errors && errors.first_name}
+                value={this.state.area}
+                onChangeText={value => this.setState({area: value})}
+                error={errors && errors.area}
               />
-              {enablePhoneNumber ? (
-                <InputMobile
-                  value={phone_number}
-                  onChangePhoneNumber={({value, code}) =>
-                    this.changeData({phone_number: value, country_no: code})
-                  }
-                  error={errors && errors.phone_number}
-                />
-              ) : null}
+
+              <InputMobile
+                value={this.state.phone_number}
+                onChangePhoneNumber={({value, code}) =>
+                  this.setState({phone_number: value, country_no: code})
+                }
+                error={errors && errors.phone_number}
+              />
+
               <Input
                 label={t('auth:text_notes')}
                 multiline={true}
                 numberOfLines={6}
-                value={first_name}
-                onChangeText={value => this.changeData({first_name: value})}
-                error={errors && errors.first_name}
+                value={this.state.notes}
+                onChangeText={value => this.setState({notes: value})}
+                error={errors && errors.notes}
               />
               <DropDownPicker
                 items={[
@@ -291,8 +384,8 @@ class Salesreportcustomer extends React.Component {
                     value: 'warm',
                   },
                   {
-                    label: 'Heat',
-                    value: 'heat',
+                    label: 'Hot',
+                    value: 'hot',
                   },
                   {
                     label: 'Cold',
@@ -300,6 +393,7 @@ class Salesreportcustomer extends React.Component {
                   },
                 ]}
                 defaultValue={this.state.customerCategory}
+                placeholder="Customer prospect"
                 containerStyle={{height: 50}}
                 style={{backgroundColor: '#fafafa'}}
                 itemStyle={{
@@ -308,7 +402,7 @@ class Salesreportcustomer extends React.Component {
                 dropDownStyle={{backgroundColor: '#fafafa'}}
                 onChangeItem={item =>
                   this.setState({
-                    country: item.value,
+                    customerCategory: item.value,
                   })
                 }
               />
@@ -324,9 +418,17 @@ class Salesreportcustomer extends React.Component {
                   color="black"
                 />
               </View>
+              <View style={styles.viewSwitch}>
+                <Text style={styles.textSwitch} colorSecondary>
+                  {t('common:text_current_date_time')}
+                </Text>
+                <Text style={styles.textSwitch} colorSecondary>
+                  {this.state.dateTime}
+                </Text>
+              </View>
               <Button
                 title={t('common:text_submit')}
-                onPress={this.handleRegister}
+                onPress={this.SelectQuery}
                 loading={loading}
               />
             </Container>
@@ -389,4 +491,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(Salesreportcustomer);
+export default Salesreportcustomer;

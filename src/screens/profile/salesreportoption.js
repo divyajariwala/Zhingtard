@@ -28,7 +28,7 @@ const SalesReportOptions = ({
       </Text>
       <ListItem
         leftIcon={icon(1)}
-        title={t('common:text_new_customer')}
+        title={t('common:text_add_new_customer_report')}
         type="underline"
         titleProps={titleProps}
         pad={padding.large}
@@ -51,7 +51,7 @@ const SalesReportOptions = ({
         titleProps={titleProps}
         pad={padding.large}
         chevron
-        onPress={() => clickPage(profileStack.customerlist)}
+        onPress={() => clickPage(profileStack.salesreportc)}
       />
     </>
   );

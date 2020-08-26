@@ -39,7 +39,8 @@ class InputMobile extends Component {
         if (this.props.value) {
           this.changePhone(this.props.value);
         }
-    });
+      },
+    );
   };
   changePhone = value => {
     const {onChangePhoneNumber} = this.props;
@@ -74,7 +75,9 @@ class InputMobile extends Component {
     } = this.props;
     const {pickerData, search, placeholder} = this.state;
 
-    const dataCountry = pickerData.filter(country => country.label.toLowerCase().indexOf(search.toLowerCase()) >= 0);
+    const dataCountry = pickerData.filter(
+      country => country.label.toLowerCase().indexOf(search.toLowerCase()) >= 0,
+    );
 
     return (
       <View style={styles.container}>
@@ -89,6 +92,7 @@ class InputMobile extends Component {
               flagStyle && flagStyle,
             ])}
             {...rest}
+            initialCountry={'us'}
             textProps={{
               placeholder,
               placeholderTextColor: theme.ViewLabel.color,
