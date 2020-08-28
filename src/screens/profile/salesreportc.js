@@ -76,11 +76,18 @@ class salesreportc extends React.Component {
     //passing the inserted text in textinput
     const newData = this.state.arrayholder.filter(function(item) {
       //applying filter for the inserted text in search bar
-      const itemData = item.c_fname
-        ? item.c_fname.toUpperCase()
-        : ''.toUpperCase();
-      const textData = text.toUpperCase();
-      return itemData.indexOf(textData) > -1;
+      // const itemData = item.c_fname
+      //   ? item.c_fname.toUpperCase()
+      //   : ''.toUpperCase();
+      // const textData = text.toUpperCase();
+      // return itemData.indexOf(textData) > -1;
+      const query = text.toLowerCase();
+
+      return (
+        item.c_fname.toLowerCase().indexOf(query) >= 0 ||
+        item.c_category.toLowerCase().indexOf(query) >= 0 ||
+        item.c_area.toLowerCase().indexOf(query) >= 0
+      );
     });
 
     this.setState({
@@ -90,6 +97,7 @@ class salesreportc extends React.Component {
       searchQuery: text,
     });
   }
+
   render() {
     const {
       navigation,

@@ -4,7 +4,8 @@ import {connect} from 'react-redux';
 import omit from 'lodash/omit';
 import assign from 'lodash/assign';
 import firebase from '@react-native-firebase/app';
-
+// import {base-64} from 'react-native-base64';
+import Base64 from 'Base64';
 import {
   StyleSheet,
   ScrollView,
@@ -66,7 +67,7 @@ class Salesreportcustomer extends React.Component {
       area: '',
       phone_number: '+60',
       notes: '',
-
+      contactname: '',
       country_no: '+60',
       user: null,
       filePath: '',
@@ -156,12 +157,10 @@ class Salesreportcustomer extends React.Component {
       );
     });
   };
-  getLocation = () => {
-    console.log('this function is called ');
+  getLocation = async () => {
     var that = this;
     //Checking for the permission just after component loaded
     if (Platform.OS === 'ios') {
-      this.callLocation(that);
     } else {
       async function requestLocationPermission() {
         try {
@@ -171,15 +170,11 @@ class Salesreportcustomer extends React.Component {
               title: 'Location Access Required',
               message: 'This App needs to Access your location',
             },
-          ); //alert massage aavyo ...callLocation called
-          // that.callLocation(that);
-          console.log('permision is granted');
+          );
+          that.callLocation(that);
           if (granted === PermissionsAndroid.RESULTS.GRANTED) {
             //To Check, If Permission is granted
             //  this.callLocation(that);
-            that.callLocation(that);
-            console.log('call location is called');
-            // this.props.dispatch('signup2')
           } else {
             alert('Permission Denied');
           }
@@ -192,7 +187,7 @@ class Salesreportcustomer extends React.Component {
     }
   };
   callLocation(that) {
-    // alert("callLocation Called");
+    alert('callLocation Called');
     console.log('this fun is call');
     // Geocoder.init("AIzaSyB9zJVLaYLD2yLMtc5cI28mg-m9-9bfyZo");
 
@@ -200,7 +195,26 @@ class Salesreportcustomer extends React.Component {
       //Will give you the current location
       position => {
         const currentLongitude = JSON.stringify(position.coords.longitude);
+        //getting the Longitude from the location json
         const currentLatitude = JSON.stringify(position.coords.latitude);
+        //getting the Latitude from the location json
+        //this.setState({ currentLongitude:currentLongitude });
+        // console.log(currentLongitude);
+        //Setting state Longitude to re re-render the Longitude Text
+        //this.setState({ currentLatitude:currentLatitude });
+        //  console.log('corent_let = ',currentLatitude);
+        //Setting state Latitude to re re-render the Longitude Text
+        //       Geocoder.init("AIzaSyCDsS5ac0CStUvHv39u8PXU6uFaSKwcMxg");
+        //    Geocoder.from(position.coords.latitude, position.coords.longitude)
+        //                 .then(json => {
+        //                     console.log(json);
+        //                     var addressComponent = json.results[0].address_components;
+        //                     this.setState({
+        //                         Address: addressComponent
+        //                     })
+        //                     console.log(addressComponent);
+        //                 })
+        //                 .catch(error => console.warn(error));
       },
       error => alert(error.message),
       {enableHighAccuracy: true, timeout: 100000, maximumAge: 1000},
@@ -214,14 +228,38 @@ class Salesreportcustomer extends React.Component {
       //getting the Longitude from the location json
       const currentLatitude = JSON.stringify(position.coords.latitude);
       console.log('leti', currentLatitude);
-      //getting the Latitude from the location json
-      this.setState({currentLongitude: currentLongitude});
-      //console.log("state longi",this.state.currentLongitude);
-      //Setting state Longitude to re re-render the Longitude Text
 
-      this.setState({currentLatitude: currentLatitude});
+      axios
+        .get('https://bd.zhingtard.com/apidata.php', {
+          params: {
+            lat: currentLatitude,
+            lng: currentLongitude,
+          },
+        })
+        .then(async function(response) {
+          console.log(response.data);
+          console.log(response.data.address.suburb);
+
+          if (response.data.status === 'true') {
+            that.setState({
+              street: response.data.address.suburb,
+              area: response.data.address.neighbourhood,
+            });
+            console.log('location get');
+          } else {
+            alert('Please check your login details');
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      //console.log("state lati",this.state.currentLatitude);
+      //Setting state Latitude to re re-render the Longitude Text
     });
   }
+  componentWillUnmount = () => {
+    Geolocation.clearWatch(this.watchID);
+  };
 
   chooseFile = () => {
     var options = {
@@ -246,6 +284,7 @@ class Salesreportcustomer extends React.Component {
         alert(response.customButton);
       } else {
         let source = response;
+
         // You can also display the image using data:
         //let source = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({
@@ -253,40 +292,36 @@ class Salesreportcustomer extends React.Component {
           Image: response.data,
           fileName: response.fileName,
         });
+        // let decodeString = base64.decode(this.state.Image);
+        // var text = utf8.decode(decodeString)
+
+        const decoded = Base64.atob(this.state.Image);
+        const encoded = Base64.btoa(decoded);
         console.log('Image data', this.state.Image);
         console.log('Image file path', this.state.filePath);
         console.log('File name', this.state.fileName);
+        console.log('Decode String', encoded);
       }
     });
   };
-  // apiCall = () => {
-  //   axios
-  //     .get('https://bd.zhingtard.com/apidata.php', {
-  //       params: {
-  //         action: 'addcd',
-  //         photo: this.state.Image,
-  //         fname: 'test',
-  //         street: 'xyz',
-  //         area: 'demo',
-
-  //         phnumber: '9913590678',
-  //         notes: 'test%20notes',
-  //         customercategory: 'c_category',
-  //         currentlocation: 'current_loca',
-  //         datetime: '1',
-  //         filename: 'IMG_20200820_025414.jpg',
-  //       },
-  //     })
-  //     .then(response => {
-  //       console.log('response', response.data);
-  //       if (response.data.status === 'true') {
-  //         console.log('APi call');
-  //       }
-  //     })
-  //     .catch(function(error) {
-  //       console.log(error);
-  //     });
-  // };
+  latlongApiCall = async () => {
+    await axios
+      .get('https://bd.zhingtard.com/apidata.php', {
+        params: {
+          lat: this.state.currentLatitude,
+          lng: this.state.currentLongitude,
+        },
+      })
+      .then(response => {
+        console.log('response', response.data);
+        if (response.data.status === 'true') {
+          console.log('APi call');
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  };
   render() {
     const {
       navigation,
@@ -343,10 +378,16 @@ class Salesreportcustomer extends React.Component {
                 </Text>
               </View>
               <Input
-                label={t('auth:text_input_first_name')}
+                label={t('auth:text_customer_name')}
                 value={this.state.firstname}
                 onChangeText={value => this.setState({firstname: value})}
                 error={errors && errors.firstname}
+              />
+              <Input
+                label={t('auth:text_contact_name')}
+                value={this.state.contactname}
+                onChangeText={value => this.setState({contactname: value})}
+                error={errors && errors.contactname}
               />
               <Input
                 label={t('auth:text_street_name')}

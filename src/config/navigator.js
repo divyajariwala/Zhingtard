@@ -92,6 +92,7 @@ export const profileStack = {
   salesreportcustomer: 'Salesreportcustomer',
   editcustomer: 'editcustomer',
   salesreportc: 'salesreportc',
+  editsalescustomer: 'editsalescustomer',
 };
 
 export const rootSwitch = {

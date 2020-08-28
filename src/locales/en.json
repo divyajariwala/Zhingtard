@@ -79,7 +79,8 @@
     "text_tap_for_the_current_location": "Tap for the current location",
     "text_current_date_time": "Current Date & Time :-",
     "text_add_new_customer_report": "Add New Customer Report",
-    "text_submit_data_online": "Submit Data Online"
+    "text_submit_data_online": "Submit Data Online",
+    "text_update": "Update"
   },
   "auth": {
     "text_input_email_address": "Email Address or Username *",
@@ -109,7 +110,9 @@
     "text_input_website": "Website",
     "text_street_name": "Street *",
     "text_area_name": "Area *",
-    "text_notes": "Notes"
+    "text_notes": "Notes *",
+    "text_customer_name":"Customer Name *",
+    "text_contact_name":"Contact Name *"
   },
   "home": {
     "text_getting_start": "Get Started",

@@ -34,6 +34,7 @@ import {margin, padding, borderRadius} from 'src/components/config/spacing';
 import {grey6} from 'src/components/config/colors';
 import unescape from 'lodash/unescape';
 import axios from 'axios';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import {Searchbar} from 'react-native-paper';
 
@@ -106,6 +107,16 @@ class OfflineCustomer extends React.Component {
           console.log(response.data);
 
           console.log('customer list', this.state.customerList);
+          db.transaction(tx => {
+            tx.executeSql('DELETE FROM Userdata1 ', [], (tx, results) => {
+              console.log('Results', results.rowsAffected);
+              if (results.rowsAffected > 0) {
+                console.log('All the recorad deleted');
+              } else {
+                console.log('Error in deleting recorad');
+              }
+            });
+          });
         })
 
         .catch(function(error) {
@@ -117,11 +128,18 @@ class OfflineCustomer extends React.Component {
     //passing the inserted text in textinput
     const newData = this.state.arrayholder.filter(function(item) {
       //applying filter for the inserted text in search bar
-      const itemData = item.FirstName
-        ? item.FirstName.toUpperCase()
-        : ''.toUpperCase();
-      const textData = text.toUpperCase();
-      return itemData.indexOf(textData) > -1;
+      // const itemData = item.c_fname
+      //   ? item.c_fname.toUpperCase()
+      //   : ''.toUpperCase();
+      // const textData = text.toUpperCase();
+      // return itemData.indexOf(textData) > -1;
+      const query = text.toLowerCase();
+
+      return (
+        item.FirstName.toLowerCase().indexOf(query) >= 0 ||
+        item.Area.toLowerCase().indexOf(query) >= 0 ||
+        item.CustomerCategory.toLowerCase().indexOf(query) >= 0
+      );
     });
 
     this.setState({
@@ -131,6 +149,49 @@ class OfflineCustomer extends React.Component {
       searchQuery: text,
     });
   }
+  goToDetails = Userid => {
+    const {navigation} = this.props;
+    db.transaction(tx => {
+      tx.executeSql(
+        'select * from Userdata1 where Id = ?',
+        [Userid],
+        async (tx, results) => {
+          var len = results.rows.length;
+          console.log('len', len);
+          if (len > 0) {
+            console.log('Result', results.rows);
+            let res = results.rows.item(0);
+
+            await AsyncStorage.setItem('@userid', JSON.stringify(res.Id));
+            await AsyncStorage.setItem('@firstname', res.FirstName);
+            await AsyncStorage.setItem('@street', res.Street);
+            await AsyncStorage.setItem('@area', res.Area);
+            await AsyncStorage.setItem(
+              '@phonenumber',
+              JSON.stringify(res.PhoneNumber),
+            );
+            await AsyncStorage.setItem('@notes', res.Notes);
+            await AsyncStorage.setItem('@category', res.CustomerCategory);
+            await AsyncStorage.setItem('@datetime', res.DateTime);
+            const router = profileStack.editsalescustomer;
+            navigation.navigate(router);
+          } else {
+            alert('No user found');
+          }
+
+          // var resultItemIdArr = new Array();
+          // for (let i = 0; i < results.rows.length; i++) {
+          //   resultItemIdArr.push(results.rows.item(i));
+          // }
+          // this.setState({
+          //   customerList: resultItemIdArr,
+          // });
+        },
+      );
+    });
+    const router = profileStack.editsalescustomer;
+    navigation.navigate(router);
+  };
   render() {
     const {
       navigation,
@@ -170,6 +231,7 @@ class OfflineCustomer extends React.Component {
                 chevron
                 style={styles.item}
                 containerStyle={{paddingVertical: padding.base}}
+                onPress={() => this.goToDetails(item.Id)}
               />
             )}
           />
