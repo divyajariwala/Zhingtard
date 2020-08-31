@@ -97,6 +97,11 @@ class salesreportc extends React.Component {
       searchQuery: text,
     });
   }
+  goToDetails = () => {
+    const {navigation} = this.props;
+    const router = profileStack.showsalescustomer;
+    navigation.navigate(router);
+  };
 
   render() {
     const {
@@ -132,8 +137,10 @@ class salesreportc extends React.Component {
                 titleProps={{
                   h4: true,
                 }}
+                chevron
                 style={styles.item}
                 containerStyle={{paddingVertical: padding.base}}
+                onPress={() => this.goToDetails(item.Id)}
               />
             )}
           />

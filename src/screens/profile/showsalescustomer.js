@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import omit from 'lodash/omit';
 import assign from 'lodash/assign';
 import firebase from '@react-native-firebase/app';
+// import {base-64} from 'react-native-base64';
 import Base64 from 'Base64';
 import {
   StyleSheet,
@@ -16,6 +17,7 @@ import {
   PermissionsAndroid,
   Platform,
   Alert,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {Header, Loading, Text, ThemedView} from 'src/components';
 import Container from 'src/containers/Container';
@@ -48,31 +50,28 @@ import normalize from 'react-native-normalize';
 import DropDownPicker from 'react-native-dropdown-picker';
 import Geolocation from '@react-native-community/geolocation';
 import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
 
 import {openDatabase} from 'react-native-sqlite-storage';
 var db = openDatabase({
   name: 'SQLite.db',
 });
-class editsalescustomer extends React.Component {
+class showsalescustomer extends React.Component {
   static navigationOptions = {
     header: null,
   };
 
   constructor(props, context) {
     super(props, context);
+    this.pressed = false;
     this.state = {
-      fisrt_name: '',
+      fisrtname: '',
       street: '',
       area: '',
-      phonenumber: '',
       phone_number: '+60',
-      note: '',
-      category: '',
-      datetime: '',
+      notes: '',
       contactname: '',
       country_no: '+60',
-      userid: '',
+      user: null,
       filePath: '',
       Image: '',
       fileName: '',
@@ -87,22 +86,30 @@ class editsalescustomer extends React.Component {
         message: null,
         errors: null,
       },
+      isClickable: true,
+      iconColour: 'black',
     };
 
     this.confirmation = null;
   }
 
-  async componentDidMount() {
-    this.setState({
-      userid: await AsyncStorage.getItem('@userid'),
-      first_name: await AsyncStorage.getItem('@firstname'),
-      street: await AsyncStorage.getItem('@street'),
-      area: await AsyncStorage.getItem('@area'),
-      phone_number: await AsyncStorage.getItem('@phonenumber'),
-      note: await AsyncStorage.getItem('@notes'),
-      customerCategory: await AsyncStorage.getItem('@category'),
-      datetime: await AsyncStorage.getItem('@datetime'),
-      contactname: await AsyncStorage.getItem('@contactname'),
+  componentDidMount() {
+    db.transaction(function(txn) {
+      txn.executeSql(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='Userdata1'",
+        [],
+        function(tx, res) {
+          if (res.rows.length == 0) {
+            txn.executeSql(
+              'CREATE TABLE IF NOT EXISTS Userdata1(Id INTEGER PRIMARY KEY AUTOINCREMENT,Profile VARCHAR(255),FirstName VARCHAR(25),Street VARCHAR(30),Area VARCHAR(30),PhoneNumber INTEGER,Notes VARCHAR(250),CustomerCategory VARCHAR(20),DateTime DATE)',
+              [],
+            );
+          }
+        },
+      );
+    });
+    db.transaction(function(txn) {
+      txn.executeSql('ALTER TABLE Userdata1 ADD Contactname VARCHAR(25)', []);
     });
     var date = new Date().getDate();
     var month = new Date().getMonth() + 1;
@@ -115,26 +122,36 @@ class editsalescustomer extends React.Component {
         month + '/' + date + '/' + year + ' ' + hours + ':' + min + ':' + sec,
     });
   }
-  updateQuery = () => {
+  SelectQuery = () => {
+    console.log('This Function Call');
+    const {firstname} = this.state;
+    const {street} = this.state;
+    const {area} = this.state;
+    const {phone_number} = this.state;
+    const {notes} = this.state;
+    const {customerCategory} = this.state;
+    const {dateTime} = this.state;
+    const {contactname} = this.state;
     db.transaction(tx => {
       tx.executeSql(
-        'UPDATE Userdata1 set FirstName=?, Street=? , Area=? ,PhoneNumber=?,Notes=?,CustomerCategory=?,contactname=? where Id=?',
+        'INSERT INTO Userdata1(Profile,FirstName,Street,Area,PhoneNumber,Notes,CustomerCategory,DateTime,Contactname) VALUES(?,?,?,?,?,?,?,?,?)',
         [
-          this.state.first_name,
-          this.state.street,
-          this.state.area,
-          this.state.phone_number,
-          this.state.note,
-          this.state.customerCategory,
-          this.state.contactname,
-          this.state.userid,
+          null,
+          firstname,
+          street,
+          area,
+          phone_number,
+          notes,
+          customerCategory,
+          dateTime,
+          contactname,
         ],
         (tx, results) => {
           console.log('Results', results.rowsAffected);
           if (results.rowsAffected > 0) {
             Alert.alert(
               'Success',
-              'User updated successfully',
+              'You are Registered Successfully',
               [
                 {
                   text: 'Ok',
@@ -142,11 +159,128 @@ class editsalescustomer extends React.Component {
               ],
               {cancelable: false},
             );
-          } else alert('Updation Failed');
+          } else {
+            alert('Registration Failed');
+          }
         },
       );
     });
   };
+  getLocation = async () => {
+    if (!this.pressed) {
+      this.pressed = true;
+      this.setState({
+        iconColour: 'grey',
+      });
+      var that = this;
+
+      //Checking for the permission just after component loaded
+      if (Platform.OS === 'ios') {
+      } else {
+        async function requestLocationPermission() {
+          try {
+            const granted = await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+              {
+                title: 'Location Access Required',
+                message: 'This App needs to Access your location',
+              },
+            );
+
+            that.callLocation(that);
+
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+              //To Check, If Permission is granted
+              //  this.callLocation(that);
+            } else {
+              alert('Permission Denied');
+            }
+          } catch (err) {
+            alert('err', err);
+            console.warn(err);
+          }
+        }
+        requestLocationPermission();
+      }
+    }
+  };
+  callLocation(that) {
+    //  alert('callLocation Called');
+    console.log('this fun is call');
+
+    // Geocoder.init("AIzaSyB9zJVLaYLD2yLMtc5cI28mg-m9-9bfyZo");
+
+    Geolocation.getCurrentPosition(
+      //Will give you the current location
+      position => {
+        const currentLongitude = JSON.stringify(position.coords.longitude);
+        //getting the Longitude from the location json
+        const currentLatitude = JSON.stringify(position.coords.latitude);
+        //getting the Latitude from the location json
+        //this.setState({ currentLongitude:currentLongitude });
+        // console.log(currentLongitude);
+        //Setting state Longitude to re re-render the Longitude Text
+        //this.setState({ currentLatitude:currentLatitude });
+        //  console.log('corent_let = ',currentLatitude);
+        //Setting state Latitude to re re-render the Longitude Text
+        //       Geocoder.init("AIzaSyCDsS5ac0CStUvHv39u8PXU6uFaSKwcMxg");
+        //    Geocoder.from(position.coords.latitude, position.coords.longitude)
+        //                 .then(json => {
+        //                     console.log(json);
+        //                     var addressComponent = json.results[0].address_components;
+        //                     this.setState({
+        //                         Address: addressComponent
+        //                     })
+        //                     console.log(addressComponent);
+        //                 })
+        //                 .catch(error => console.warn(error));
+      },
+      error => alert(error.message),
+      {enableHighAccuracy: true, timeout: 100000, maximumAge: 1000},
+    );
+
+    this.watchID = Geolocation.watchPosition(position => {
+      //Will give you the location on location change
+      console.log('position = ', position);
+      const currentLongitude = JSON.stringify(position.coords.longitude);
+      console.log('longi', currentLongitude);
+      //getting the Longitude from the location json
+      const currentLatitude = JSON.stringify(position.coords.latitude);
+      console.log('leti', currentLatitude);
+
+      axios
+        .get('https://bd.zhingtard.com/apidata.php', {
+          params: {
+            lat: currentLatitude,
+            lng: currentLongitude,
+          },
+        })
+        .then(async function(response) {
+          console.log(response.data);
+          console.log(response.data.address.suburb);
+
+          if (response.data.status === 'true') {
+            that.setState({
+              street: response.data.address.suburb,
+              area: response.data.address.neighbourhood,
+            });
+
+            console.log('location get');
+          } else {
+            alert('Please check your login details');
+          }
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+      //console.log("state lati",this.state.currentLatitude);
+      //Setting state Latitude to re re-render the Longitude Text
+    });
+  }
+  componentWillUnmount = () => {
+    Geolocation.clearWatch(this.watchID);
+  };
+
   chooseFile = () => {
     var options = {
       title: 'Select Image',
@@ -190,8 +324,8 @@ class editsalescustomer extends React.Component {
       }
     });
   };
-  latlongApiCall = () => {
-    axios
+  latlongApiCall = async () => {
+    await axios
       .get('https://bd.zhingtard.com/apidata.php', {
         params: {
           lat: this.state.currentLatitude,
@@ -264,8 +398,8 @@ class editsalescustomer extends React.Component {
                 </Text>
               </View>
               <Input
-                label={t('auth:text_input_first_name')}
-                value={this.state.first_name}
+                label={t('auth:text_customer_name')}
+                value={this.state.firstname}
                 onChangeText={value => this.setState({firstname: value})}
                 error={errors && errors.firstname}
               />
@@ -300,8 +434,8 @@ class editsalescustomer extends React.Component {
                 label={t('auth:text_notes')}
                 multiline={true}
                 numberOfLines={6}
-                value={this.state.note}
-                onChangeText={value => this.setState({note: value})}
+                value={this.state.notes}
+                onChangeText={value => this.setState({notes: value})}
                 error={errors && errors.notes}
               />
               <DropDownPicker
@@ -337,13 +471,13 @@ class editsalescustomer extends React.Component {
                 <Text style={styles.textSwitch} colorSecondary>
                   {t('common:text_tap_for_the_current_location')}
                 </Text>
-
-                <Icon
-                  onPress={this.getLocation}
-                  name="map-pin"
-                  size={30}
-                  color="black"
-                />
+                <TouchableWithoutFeedback onPress={this.getLocation}>
+                  <Icon
+                    name="map-pin"
+                    size={30}
+                    color={this.state.iconColour}
+                  />
+                </TouchableWithoutFeedback>
               </View>
               <View style={styles.viewSwitch}>
                 <Text style={styles.textSwitch} colorSecondary>
@@ -354,8 +488,8 @@ class editsalescustomer extends React.Component {
                 </Text>
               </View>
               <Button
-                title={t('common:text_update')}
-                onPress={this.updateQuery}
+                title={t('common:text_submit')}
+                onPress={this.SelectQuery}
                 loading={loading}
               />
             </Container>
@@ -418,4 +552,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default editsalescustomer;
+export default showsalescustomer;

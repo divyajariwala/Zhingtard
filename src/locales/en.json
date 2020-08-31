@@ -80,7 +80,18 @@
     "text_current_date_time": "Current Date & Time :-",
     "text_add_new_customer_report": "Add New Customer Report",
     "text_submit_data_online": "Submit Data Online",
-    "text_update": "Update"
+    "text_update": "Update",
+    "text-sales-performance": "Sales Performance",
+    "text_customer_purchase": "Customer Purchase",
+    "text_customer_name": "Customer Name:",
+    "text_customer_text": "Test",
+    "text_product_details": "Product Details",
+    "text_product_name": "Product Name",
+    "text_product_price": "Price",
+    "text_commision": "Commision",
+    "text_sales_person_name": "Sales Person:",
+    "text_total": "Total",
+    "text_total_commision": "Total Commision"
   },
   "auth": {
     "text_input_email_address": "Email Address or Username *",
@@ -111,8 +122,8 @@
     "text_street_name": "Street *",
     "text_area_name": "Area *",
     "text_notes": "Notes *",
-    "text_customer_name":"Customer Name *",
-    "text_contact_name":"Contact Name *"
+    "text_customer_name": "Customer Name *",
+    "text_contact_name": "Contact Name *"
   },
   "home": {
     "text_getting_start": "Get Started",

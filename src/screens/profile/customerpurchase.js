@@ -36,17 +36,16 @@ import unescape from 'lodash/unescape';
 import axios from 'axios';
 import AsyncStorage from '@react-native-community/async-storage';
 
-import {Searchbar} from 'react-native-paper';
 const Data = [
-  {name: 'Test', product: 'Grand Fix'},
-  {name: 'Test', product: 'Grand Fix'},
-  {name: 'Test', product: 'Grand Fix'},
-  {name: 'Test', product: 'Grand Fix'},
-  {name: 'Test', product: 'Grand Fix'},
-  {name: 'Test', product: 'Grand Fix'},
-  {name: 'Test', product: 'Grand Fix'},
+  {Pname: 'Test', product: 'Grand Fix', commision: '5%', price: '500 Rs'},
+  {Pname: 'Test', product: 'Grand Fix', commision: '5%', price: '500 Rs'},
+  {Pname: 'Test', product: 'Grand Fix', commision: '5%', price: '500 Rs'},
+  {Pname: 'Test', product: 'Grand Fix', commision: '5%', price: '500 Rs'},
+  {Pname: 'Test', product: 'Grand Fix', commision: '5%', price: '500 Rs'},
+  {Pname: 'Test', product: 'Grand Fix', commision: '5%', price: '500 Rs'},
+  {Pname: 'Test', product: 'Grand Fix', commision: '5%', price: '500 Rs'},
 ];
-class Salesperformance extends React.Component {
+class customerpurchase extends React.Component {
   static navigationOptions = {
     header: null,
   };
@@ -94,6 +93,24 @@ class Salesperformance extends React.Component {
     const router = profileStack.customerpurchase;
     navigation.navigate(router);
   };
+  listItem = item => {
+    const {
+      navigation,
+      auth: {pending},
+      screenProps: {t, theme},
+      enablePhoneNumber,
+      ...rest
+    } = this.props;
+    return (
+      <View>
+        <View style={styles.listheading}>
+          <Text>{item.product}</Text>
+          <Text>{item.price}</Text>
+          <Text>{item.commision}</Text>
+        </View>
+      </View>
+    );
+  };
   render() {
     const {
       navigation,
@@ -108,35 +125,41 @@ class Salesperformance extends React.Component {
         <Header
           leftComponent={<IconHeader />}
           centerComponent={
-            <TextHeader title={t('common:text-sales-performance')} />
+            <TextHeader title={t('common:text_customer_purchase')} />
           }
         />
 
         <Container style={styles.content}>
-          <Searchbar
-            placeholder="Search"
-            onChangeText={text => this.SearchFilterFunction(text)}
-            value={this.state.searchQuery}
-          />
-
-          <FlatList
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={item => `${item.user_id}`}
-            data={Data}
-            renderItem={({item}) => (
-              <ListItem
-                title={unescape(item.name)}
-                titleProps={{
-                  h4: true,
-                }}
-                chevron
-                style={styles.item}
-                containerStyle={{paddingVertical: padding.base}}
-                onPress={() => this.goToDetails(item.Id)}
-              />
-            )}
-          />
+          <View style={styles.textalign}>
+            <Text medium style={styles.textstyle}>
+              {t('common:text_customer_name')}
+            </Text>
+            <Text medium style={styles.textstyle}>{t('common:text_customer_text')}</Text>
+          </View>
+          <View style={styles.textalign}>
+            <Text medium style={styles.textstyle}>{t('common:text_sales_person_name')}</Text>
+            <Text medium style={styles.textstyle}>{t('common:text_customer_text')}</Text>
+          </View>
+          <Text medium style={styles.textstyle}>{t('common:text_product_details')}</Text>
+          <View style={styles.listheading}>
+            <Text medium style={styles.textstyle}>{t('common:text_product_name')}</Text>
+            <Text medium style={styles.textstyle}>{t('common:text_product_price')}</Text>
+            <Text medium style={styles.textstyle}>{t('common:text_commision')}</Text>
+          </View>
+          <View>
+            <FlatList
+              data={Data}
+              renderItem={({item}) => this.listItem(item)}
+            />
+          </View>
+          <View style={styles.textalign}>
+            <Text medium style={styles.textstyle}>{t('common:text_total_commision')}</Text>
+            <Text medium style={styles.textstyle}>{t('common:text_customer_text')}</Text>
+          </View>
+          <View style={styles.textalign}>
+            <Text medium style={styles.textstyle}>{t('common:text_total')}</Text>
+            <Text medium style={styles.textstyle}>{t('common:text_customer_text')}</Text>
+          </View>
         </Container>
       </ThemedView>
     );
@@ -164,6 +187,17 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     color: grey6,
   },
+  textalign: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  listheading: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  textstyle: {
+    lineHeight: 40,
+  },
 });
 
 const mapStateToProps = state => {
@@ -175,4 +209,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(Salesperformance);
+export default connect(mapStateToProps)(customerpurchase);

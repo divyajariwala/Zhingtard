@@ -17,6 +17,7 @@ import {
   PermissionsAndroid,
   Platform,
   Alert,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import {Header, Loading, Text, ThemedView} from 'src/components';
 import Container from 'src/containers/Container';
@@ -61,6 +62,7 @@ class Salesreportcustomer extends React.Component {
 
   constructor(props, context) {
     super(props, context);
+    this.pressed = false;
     this.state = {
       fisrtname: '',
       street: '',
@@ -84,6 +86,8 @@ class Salesreportcustomer extends React.Component {
         message: null,
         errors: null,
       },
+      isClickable: true,
+      iconColour: 'black',
     };
 
     this.confirmation = null;
@@ -103,6 +107,9 @@ class Salesreportcustomer extends React.Component {
           }
         },
       );
+    });
+    db.transaction(function(txn) {
+      txn.executeSql('ALTER TABLE Userdata1 ADD Contactname VARCHAR(25)', []);
     });
     var date = new Date().getDate();
     var month = new Date().getMonth() + 1;
@@ -124,9 +131,10 @@ class Salesreportcustomer extends React.Component {
     const {notes} = this.state;
     const {customerCategory} = this.state;
     const {dateTime} = this.state;
+    const {contactname} = this.state;
     db.transaction(tx => {
       tx.executeSql(
-        'INSERT INTO Userdata1(Profile,FirstName,Street,Area,PhoneNumber,Notes,CustomerCategory,DateTime) VALUES(?,?,?,?,?,?,?,?)',
+        'INSERT INTO Userdata1(Profile,FirstName,Street,Area,PhoneNumber,Notes,CustomerCategory,DateTime,Contactname) VALUES(?,?,?,?,?,?,?,?,?)',
         [
           null,
           firstname,
@@ -136,6 +144,7 @@ class Salesreportcustomer extends React.Component {
           notes,
           customerCategory,
           dateTime,
+          contactname,
         ],
         (tx, results) => {
           console.log('Results', results.rowsAffected);
@@ -158,37 +167,47 @@ class Salesreportcustomer extends React.Component {
     });
   };
   getLocation = async () => {
-    var that = this;
-    //Checking for the permission just after component loaded
-    if (Platform.OS === 'ios') {
-    } else {
-      async function requestLocationPermission() {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Access Required',
-              message: 'This App needs to Access your location',
-            },
-          );
-          that.callLocation(that);
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            //To Check, If Permission is granted
-            //  this.callLocation(that);
-          } else {
-            alert('Permission Denied');
+    if (!this.pressed) {
+      this.pressed = true;
+      this.setState({
+        iconColour: 'grey',
+      });
+      var that = this;
+
+      //Checking for the permission just after component loaded
+      if (Platform.OS === 'ios') {
+      } else {
+        async function requestLocationPermission() {
+          try {
+            const granted = await PermissionsAndroid.request(
+              PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+              {
+                title: 'Location Access Required',
+                message: 'This App needs to Access your location',
+              },
+            );
+
+            that.callLocation(that);
+
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+              //To Check, If Permission is granted
+              //  this.callLocation(that);
+            } else {
+              alert('Permission Denied');
+            }
+          } catch (err) {
+            alert('err', err);
+            console.warn(err);
           }
-        } catch (err) {
-          alert('err', err);
-          console.warn(err);
         }
+        requestLocationPermission();
       }
-      requestLocationPermission();
     }
   };
   callLocation(that) {
-    alert('callLocation Called');
+    //  alert('callLocation Called');
     console.log('this fun is call');
+
     // Geocoder.init("AIzaSyB9zJVLaYLD2yLMtc5cI28mg-m9-9bfyZo");
 
     Geolocation.getCurrentPosition(
@@ -245,6 +264,7 @@ class Salesreportcustomer extends React.Component {
               street: response.data.address.suburb,
               area: response.data.address.neighbourhood,
             });
+
             console.log('location get');
           } else {
             alert('Please check your login details');
@@ -451,13 +471,13 @@ class Salesreportcustomer extends React.Component {
                 <Text style={styles.textSwitch} colorSecondary>
                   {t('common:text_tap_for_the_current_location')}
                 </Text>
-
-                <Icon
-                  onPress={this.getLocation}
-                  name="map-pin"
-                  size={30}
-                  color="black"
-                />
+                <TouchableWithoutFeedback onPress={this.getLocation}>
+                  <Icon
+                    name="map-pin"
+                    size={30}
+                    color={this.state.iconColour}
+                  />
+                </TouchableWithoutFeedback>
               </View>
               <View style={styles.viewSwitch}>
                 <Text style={styles.textSwitch} colorSecondary>

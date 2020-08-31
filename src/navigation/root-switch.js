@@ -1,14 +1,15 @@
 import React from 'react';
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
-import { rootSwitch } from 'src/config/navigator';
+import {AsyncStorage} from 'react-native';
+import {createAppContainer, createSwitchNavigator} from 'react-navigation';
+
+import {rootSwitch} from 'src/config/navigator';
 
 import MainStack from './main-stack';
 import AuthStack from './auth-stack';
 
 import Loading from 'src/screens/loading';
 import GetStart from 'src/screens/get-start';
-
 export default createAppContainer(
   createSwitchNavigator(
     {
@@ -19,6 +20,6 @@ export default createAppContainer(
     },
     {
       initialRouteName: rootSwitch.loading,
-    }
-  )
+    },
+  ),
 );

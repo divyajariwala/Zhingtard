@@ -93,6 +93,8 @@ export const profileStack = {
   editcustomer: 'editcustomer',
   salesreportc: 'salesreportc',
   editsalescustomer: 'editsalescustomer',
+  customerpurchase: 'customerpurchase',
+  showsalescustomer: 'showsalescustomer',
 };
 
 export const rootSwitch = {

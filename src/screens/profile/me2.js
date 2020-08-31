@@ -49,6 +49,7 @@ class MeScreen2 extends Component {
   goPageOther = router => {
     this.props.navigation.navigate(router);
   };
+  handleClick = () => this.props.navigation.goBack();
 
   render() {
     const {
@@ -67,16 +68,14 @@ class MeScreen2 extends Component {
               isLogin={isLogin}
               clickPage={this.goPageOther}
             /> */}
-           
-              <SalesReportOptions
-                isLogin={isLogin}
-                clickPage={this.goPageOther}
-                goPhone={this.handleLinkUrl}
-                phonenumber={configs.get('phone')}
-              />
-          
-          
-           
+
+            <SalesReportOptions
+              isLogin={isLogin}
+              clickPage={this.goPageOther}
+              goPhone={this.handleLinkUrl}
+              handleClick={this.handleClick}
+              phonenumber={configs.get('phone')}
+            />
           </Container>
         </ScrollView>
       </ThemedView>

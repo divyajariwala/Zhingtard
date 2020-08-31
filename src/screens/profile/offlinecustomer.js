@@ -99,6 +99,7 @@ class OfflineCustomer extends React.Component {
             customercategory: this.state.customerList[i].CustomerCategory,
             currentlocation: 'current_loca',
             datetime: this.state.customerList[i].DateTime,
+            contactname: this.state.customerList[i].Contactname,
             filename: '',
           },
         })
@@ -173,6 +174,7 @@ class OfflineCustomer extends React.Component {
             await AsyncStorage.setItem('@notes', res.Notes);
             await AsyncStorage.setItem('@category', res.CustomerCategory);
             await AsyncStorage.setItem('@datetime', res.DateTime);
+            await AsyncStorage.setItem('@contactname', res.Contactname);
             const router = profileStack.editsalescustomer;
             navigation.navigate(router);
           } else {

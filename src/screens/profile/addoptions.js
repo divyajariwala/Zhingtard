@@ -1,7 +1,7 @@
 import React from 'react';
 import {useTranslation} from 'react-i18next';
 
-import {StyleSheet} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import {Text, ListItem} from 'src/components';
 
 import {grey4} from 'src/components/config/colors';
@@ -10,6 +10,7 @@ import {margin, padding} from 'src/components/config/spacing';
 import {profileStack} from 'src/config/navigator';
 import {connect} from 'react-redux';
 import {signOut} from 'src/modules/auth/actions';
+import {Icon as IconComponent} from 'src/components';
 
 const AddOption = ({
   isLogin,
@@ -18,14 +19,31 @@ const AddOption = ({
   goPhone,
   handleSignOut,
   check,
+  navigation,
+  onPress,
+  handleClick,
 }) => {
   const {t} = useTranslation();
 
   return (
     <>
-      <Text medium style={styles.title}>
-        {t('common:text_new_customer')}
-      </Text>
+      <View style={{flexDirection: 'row'}}>
+        <TouchableOpacity
+          onPress={() => handleClick()}
+          style={{
+            padding: 1,
+            color: grey4,
+            marginTop: margin.big + 4,
+            marginBottom: margin.small,
+            marginRight: 2,
+          }}>
+          <IconComponent name="chevron-left" size={24} />
+        </TouchableOpacity>
+        <Text medium style={styles.title}>
+          {t('common:text_new_customer')}
+        </Text>
+      </View>
+
       <ListItem
         leftIcon={icon(0)}
         title={t('common:text_customer_list')}
@@ -51,7 +69,7 @@ const AddOption = ({
 const styles = StyleSheet.create({
   title: {
     color: grey4,
-    marginTop: margin.big + 4,
+    marginTop: margin.big + 6,
     marginBottom: margin.small,
   },
   phone: {

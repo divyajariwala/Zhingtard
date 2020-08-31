@@ -5,7 +5,7 @@ import {StyleSheet, ScrollView, View, Linking} from 'react-native';
 import {Header, ThemedView, Text} from 'src/components';
 
 import HeaderMe from './containers/HeaderMe';
-import  AddOption from './addoptions'
+import AddOption from './addoptions';
 
 import InformationMe from './containers/InformationMe';
 import Container from 'src/containers/Container';
@@ -50,7 +50,7 @@ class MeScreen1 extends Component {
   goPageOther = router => {
     this.props.navigation.navigate(router);
   };
-
+  handleClick = () => this.props.navigation.goBack();
   render() {
     const {
       configs,
@@ -68,16 +68,14 @@ class MeScreen1 extends Component {
               isLogin={isLogin}
               clickPage={this.goPageOther}
             /> */}
-           
-              <AddOption
-                isLogin={isLogin}
-                clickPage={this.goPageOther}
-                goPhone={this.handleLinkUrl}
-                phonenumber={configs.get('phone')}
-              />
-          
-          
-           
+
+            <AddOption
+              isLogin={isLogin}
+              clickPage={this.goPageOther}
+              goPhone={this.handleLinkUrl}
+              phonenumber={configs.get('phone')}
+              handleClick={this.handleClick}
+            />
           </Container>
         </ScrollView>
       </ThemedView>

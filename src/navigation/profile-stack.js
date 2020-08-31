@@ -32,6 +32,8 @@ import Salesreportcustomer from 'src/screens/profile/salesreportcustomer';
 import editcustomer from 'src/screens/profile/editcustomer';
 import salesreportc from 'src/screens/profile/salesreportc';
 import editsalescustomer from 'src/screens/profile/editsalescustomer';
+import customerpurchase from 'src/screens/profile/customerpurchase';
+import showsalescustomer from 'src/screens/profile/showsalescustomer';
 
 export default createStackNavigator(
   {
@@ -65,6 +67,8 @@ export default createStackNavigator(
     [profileStack.editcustomer]: editcustomer,
     [profileStack.salesreportc]: salesreportc,
     [profileStack.editsalescustomer]: editsalescustomer,
+    [profileStack.customerpurchase]: customerpurchase,
+    [profileStack.showsalescustomer]: showsalescustomer,
   },
   {
     defaultNavigationOptions: {

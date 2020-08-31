@@ -16,7 +16,7 @@ import Button from 'src/containers/Button';
 import TextHtml from 'src/containers/TextHtml';
 import {TextHeader, IconHeader} from 'src/containers/HeaderComponent';
 import SocialMethods from './containers/SocialMethods';
-import {rootSwitch, authStack} from 'src/config/navigator'; 
+import {rootSwitch, authStack} from 'src/config/navigator';
 
 import {signInWithEmail} from 'src/modules/auth/actions';
 import {authSelector} from 'src/modules/auth/selectors';
@@ -46,7 +46,6 @@ class LoginScreen extends React.Component {
   }
 
   handleLogin = async () => {
-    
     if (this.state.username === '' && this.state.password === '') {
       alert('Please Fill the details');
     } else {
@@ -67,11 +66,13 @@ class LoginScreen extends React.Component {
         console.log(response.data);
         console.log(response.data.data.user_id);
         const salespersonid = response.data.data.user_id;
+        const authtoken = response.data.data.auth_token;
         console.log('salespersonid', salespersonid);
         if (response.data.status === 'true') {
           if (response.data.data.user_role === 'sales_person') {
             await AsyncStorage.setItem('logincheck', 'sales_person');
             await AsyncStorage.setItem('Salepersonid', salespersonid);
+            await AsyncStorage.setItem('Token', authtoken);
           } else {
             await AsyncStorage.setItem('logincheck', 'customer');
           }
